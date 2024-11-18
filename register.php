@@ -50,89 +50,16 @@ if(isset($_POST['signUp'])){
 }
 
 if(isset($_POST['login'])) {
-    $username = mysqli_real_escape_string($conn, $_POST['username']);
+    $email = mysqli_real_escape_string($conn, $_POST['email']);
     $password = mysqli_real_escape_string($conn, $_POST['password']);
     
-    // Check if admin credentials
-    if($username == "admin" && $password == "admin123") {
-        $_SESSION['admin'] = true;
-        header('Location: adminhome.php');
-        exit();
-    }
-    
-    // Regular user login
-    $query = mysqli_query($conn, "SELECT * from users WHERE username='$username' AND password='$password'");
+    $query = mysqli_query($conn, "SELECT * from users WHERE email='$email' AND password='$password'");
     if(mysqli_num_rows($query) > 0) {
-        $_SESSION['username'] = $username;
+        $_SESSION['email'] = $email;
         header('Location: home.php');
         exit();
     } else {
         header('Location: index.php');
     }
 }
-
-// Handles admin login
-if(isset($_POST['admin_login'])) {
-    $username = mysqli_real_escape_string($conn, $_POST['admin_username']);
-    $password = mysqli_real_escape_string($conn, $_POST['admin_password']);
-    
-    echo "Username: " . $username . "<br>";
-    echo "Password: " . $password . "<br>";
-    
-    $query = mysqli_query($conn, "SELECT * FROM admin WHERE username='$username' AND password='$password'");
-    echo "Number of rows: " . mysqli_num_rows($query);
-    
-    if(mysqli_num_rows($query) == 1) {
-        $_SESSION['admin'] = true;
-        header('Location: adminhome.php');
-        exit();
-    }
-}
-
-// Add property
-if(isset($_POST['add_property'])) {
-    $name = mysqli_real_escape_string($conn, $_POST['property_name']);
-    $type = mysqli_real_escape_string($conn, $_POST['property_type']);
-    $location = mysqli_real_escape_string($conn, $_POST['location']);
-    $price = mysqli_real_escape_string($conn, $_POST['price']);
-    $status = mysqli_real_escape_string($conn, $_POST['status']);
-    
-    mysqli_query($conn, "INSERT INTO properties (property_name, property_type, location, price, status) 
-                        VALUES ('$name', '$type', '$location', '$price', '$status')");
-    $_SESSION['admin'] = true;
-    header('Location: adminhome.php');
-    exit();
-}
-
-// Edit property
-if(isset($_POST['edit_property'])) {
-    $id = $_POST['property_id'];
-    $name = mysqli_real_escape_string($conn, $_POST['property_name']);
-    $type = mysqli_real_escape_string($conn, $_POST['property_type']);
-    $location = mysqli_real_escape_string($conn, $_POST['location']);
-    $price = mysqli_real_escape_string($conn, $_POST['price']);
-    $status = mysqli_real_escape_string($conn, $_POST['status']);
-    
-    mysqli_query($conn, "UPDATE properties 
-                        SET property_name='$name', property_type='$type', 
-                            location='$location', price='$price', status='$status' 
-                        WHERE id=$id");
-    $_SESSION['admin'] = true;
-    header('Location: adminhome.php');
-    exit();
-}
-
-// Delete property
-if(isset($_POST['delete_property'])) {
-    $id = $_POST['property_id'];
-    mysqli_query($conn, "DELETE FROM properties WHERE id=$id");
-    $_SESSION['admin'] = true;
-    header('Location: adminhome.php');
-    exit();
-}
-
-//To show error 
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-var_dump($_POST);
 ?>

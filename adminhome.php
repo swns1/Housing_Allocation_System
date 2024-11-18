@@ -1,24 +1,6 @@
 <?php
 session_start();
 include('connect.php');
-
-if(isset($_POST['admin_login'])) {
-    $username = mysqli_real_escape_string($conn, $_POST['admin_username']);
-    $password = mysqli_real_escape_string($conn, $_POST['admin_password']);
-    
-    $query = mysqli_query($conn, "SELECT * FROM admin WHERE username='$username' AND password='$password'");
-    if(mysqli_num_rows($query) == 1) {
-        $_SESSION['admin'] = true;
-    } else {
-        header('Location: index.php');
-        exit();
-    }
-}
-
-if(!isset($_SESSION['admin'])) {
-    header('Location: index.php');
-    exit();
-}
 ?>
 
 <!DOCTYPE html>
@@ -32,25 +14,23 @@ if(!isset($_SESSION['admin'])) {
     <h2>Admin Dashboard</h2>
     
     <!-- Add Property Form -->
-    <div class="add-property">
+    <form method="post" action="adminhome.php">
         <h3>Add New Property</h3>
-        <form method="post" action="register.php">
-            <input type="text" name="property_name" placeholder="Property Name" required>
-            <select name="property_type" required>
-                <option value="apartment">Apartment</option>
-                <option value="house">House</option>
-                <option value="studio">Studio</option>
-            </select>
-            <input type="text" name="location" placeholder="Location" required>
-            <input type="number" name="price" placeholder="Price" required>
-            <select name="status" required>
-                <option value="available">Available</option>
-                <option value="occupied">Occupied</option>
-                <option value="maintenance">Under Maintenance</option>
-            </select>
-            <button type="submit" name="add_property">Add Property</button>
-        </form>
-    </div>
+        <input type="text" name="property_name" placeholder="Property Name" required>
+        <select name="property_type" required>
+            <option value="apartment">Apartment</option>
+            <option value="house">House</option>
+            <option value="studio">Studio</option>
+        </select>
+        <input type="text" name="location" placeholder="Location" required>
+        <input type="number" name="price" placeholder="Price" required>
+        <select name="status" required>
+            <option value="available">Available</option>
+            <option value="occupied">Occupied</option>
+            <option value="maintenance">Under Maintenance</option>
+        </select>
+        <button type="submit" name="add_property">Add Property</button>
+    </form>
 
     <!-- Property List -->
     <div class="property-list">
@@ -64,9 +44,8 @@ if(!isset($_SESSION['admin'])) {
                 echo "<p>Location: {$property['location']}</p>";
                 echo "<p>Price: ₱" . $property['price'] . "</p>";
                 echo "<p>Status: {$property['status']}</p>";
-                
-                // Edit
-                echo "<form method='post' action='register.php'>";
+            
+                echo "<form method='post' action='adminhome.php'>";
                 echo "<input type='hidden' name='property_id' value='{$property['id']}'>";
                 echo "<input type='text' name='property_name' value='{$property['property_name']}'>";
                 echo "<select name='property_type'>";
@@ -83,15 +62,49 @@ if(!isset($_SESSION['admin'])) {
                 echo "</select>";
                 echo "<button type='submit' name='edit_property'>Update</button>";
                 echo "</form>";
-                
-                // Delete
-                echo "<form method='post' action='register.php'>";
+            
+                echo "<form method='post' action='adminhome.php'>";
                 echo "<input type='hidden' name='property_id' value='{$property['id']}'>";
                 echo "<button type='submit' name='delete_property'>Delete</button>";
                 echo "</form>";
                 echo "</div>";
             }
         ?>
-    </div>
-</body>
+    </div></body>
 </html>
+  <?php
+  if(isset($_POST['add_property'])) {
+      $name = mysqli_real_escape_string($conn, $_POST['property_name']);
+      $type = mysqli_real_escape_string($conn, $_POST['property_type']);
+      $location = mysqli_real_escape_string($conn, $_POST['location']);
+      $price = mysqli_real_escape_string($conn, $_POST['price']);
+      $status = mysqli_real_escape_string($conn, $_POST['status']);
+    
+      mysqli_query($conn, "INSERT INTO properties (property_name, property_type, location, price, status) 
+                          VALUES ('$name', '$type', '$location', '$price', '$status')");
+      header("Location: adminhome.php");
+      exit();
+  }
+
+  if(isset($_POST['edit_property'])) {
+      $id = $_POST['property_id'];
+      $name = mysqli_real_escape_string($conn, $_POST['property_name']);
+      $type = mysqli_real_escape_string($conn, $_POST['property_type']);
+      $location = mysqli_real_escape_string($conn, $_POST['location']);
+      $price = mysqli_real_escape_string($conn, $_POST['price']);
+      $status = mysqli_real_escape_string($conn, $_POST['status']);
+    
+      mysqli_query($conn, "UPDATE properties 
+                          SET property_name='$name', property_type='$type', 
+                              location='$location', price='$price', status='$status' 
+                          WHERE id=$id");
+      header("Location: adminhome.php");
+      exit();
+  }
+
+  if(isset($_POST['delete_property'])) {
+      $id = $_POST['property_id'];
+      mysqli_query($conn, "DELETE FROM properties WHERE id=$id");
+      header("Location: adminhome.php");
+      exit();
+  }  ?>
