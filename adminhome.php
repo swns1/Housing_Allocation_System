@@ -15,25 +15,21 @@ include('connect.php');
     
     <!-- Add Property Form -->
     <form method="post" action="adminhome.php">
-        <h3>Add New Property</h3>
-        <input type="text" name="property_name" placeholder="Property Name" required>
-        <input type="number" name="floor_area" placeholder="Floor Area (sqm)" required>
-        <input type="number" name="monthly_rent" placeholder="Monthly Rent" required>
-        <input type="text" name="annual_range" placeholder="Annual Range" required>
-        <input type="text" name="capacity" placeholder="Capacity" required>
-        <select name="location_type" required>
-            <option value="Urban">Urban</option>
-            <option value="Rural">Rural</option>
-        </select>
-        <input type="text" name="utilities" placeholder="Utilities" required>
-        <input type="text" name="amenities" placeholder="Amenities" required>
-        <select name="status" required>
-            <option value="Available">Available</option>
-            <option value="Occupied">Occupied</option>
-            <option value="Maintenance">Under Maintenance</option>
-        </select>
-        <button type="submit" name="add_property">Add Property</button>
-    </form>
+    <h3>Add New Property</h3>
+    <select name="property_type" required>
+        <option value="Apartment">Apartment</option>
+        <option value="Residential Lot">Residential Lot</option>
+        <option value="Condo">Condo</option>
+        <option value="House and Lot">House and Lot</option>
+        <option value="Commercial">Commercial</option>
+    </select>
+    <input type="text" name="price_range" placeholder="Price Range" required>
+    <input type="text" name="location" placeholder="Location" required>
+    <input type="number" name="area" placeholder="Area (sqm)" required>
+    <input type="text" name="capacity" placeholder="Capacity" required>
+    <textarea name="description" placeholder="Description" required></textarea>
+    <button type="submit" name="add_property">Add Property</button>
+</form>
 
     <!-- Property List -->
     <div class="property-list">
@@ -44,25 +40,20 @@ include('connect.php');
                 echo "<div class='property-item'>";
                 echo "<form method='post' action='adminhome.php'>";
                 echo "<input type='hidden' name='property_id' value='{$property['id']}'>";
-                echo "<input type='text' name='property_name' value='{$property['property_name']}'>";
-                echo "<input type='number' name='floor_area' value='{$property['floor_area']}'>";
-                echo "<input type='number' name='monthly_rent' value='{$property['monthly_rent']}'>";
-                echo "<input type='text' name='annual_range' value='{$property['annual_range']}'>";
+                echo "<select name='property_type'>";
+                $types = ['Apartment', 'Residential Lot', 'Condo', 'House and Lot', 'Commercial'];
+                foreach($types as $type) {
+                    echo "<option value='$type' ".($property['property_type']==$type?'selected':'').">$type</option>";
+                }
+                echo "</select>";
+                echo "<input type='text' name='price_range' value='{$property['price_range']}'>";
+                echo "<input type='text' name='location' value='{$property['location']}'>";
+                echo "<input type='number' name='area' value='{$property['area']}'>";
                 echo "<input type='text' name='capacity' value='{$property['capacity']}'>";
-                echo "<select name='location_type'>";
-                echo "<option value='Urban' ".($property['location_type']=='Urban'?'selected':'').">Urban</option>";
-                echo "<option value='Rural' ".($property['location_type']=='Rural'?'selected':'').">Rural</option>";
-                echo "</select>";
-                echo "<input type='text' name='utilities' value='{$property['utilities']}'>";
-                echo "<input type='text' name='amenities' value='{$property['amenities']}'>";
-                echo "<select name='status'>";
-                echo "<option value='Available' ".($property['status']=='Available'?'selected':'').">Available</option>";
-                echo "<option value='Occupied' ".($property['status']=='Occupied'?'selected':'').">Occupied</option>";
-                echo "<option value='Maintenance' ".($property['status']=='Maintenance'?'selected':'').">Maintenance</option>";
-                echo "</select>";
+                echo "<textarea name='description'>{$property['description']}</textarea>";
                 echo "<button type='submit' name='edit_property'>Update</button>";
                 echo "</form>";
-            
+                
                 echo "<form method='post' action='adminhome.php'>";
                 echo "<input type='hidden' name='property_id' value='{$property['id']}'>";
                 echo "<button type='submit' name='delete_property'>Delete</button>";
@@ -74,42 +65,35 @@ include('connect.php');
 </html>
   <?php
   if(isset($_POST['add_property'])) {
-      $name = mysqli_real_escape_string($conn, $_POST['property_name']);
-      $floor_area = mysqli_real_escape_string($conn, $_POST['floor_area']);
-      $monthly_rent = mysqli_real_escape_string($conn, $_POST['monthly_rent']);
-      $annual_range = mysqli_real_escape_string($conn, $_POST['annual_range']);
-      $capacity = mysqli_real_escape_string($conn, $_POST['capacity']);
-      $location_type = mysqli_real_escape_string($conn, $_POST['location_type']);
-      $utilities = mysqli_real_escape_string($conn, $_POST['utilities']);
-      $amenities = mysqli_real_escape_string($conn, $_POST['amenities']);
-      $status = mysqli_real_escape_string($conn, $_POST['status']);
+    $type = mysqli_real_escape_string($conn, $_POST['property_type']);
+    $price_range = mysqli_real_escape_string($conn, $_POST['price_range']);
+    $location = mysqli_real_escape_string($conn, $_POST['location']);
+    $area = mysqli_real_escape_string($conn, $_POST['area']);
+    $capacity = mysqli_real_escape_string($conn, $_POST['capacity']);
+    $description = mysqli_real_escape_string($conn, $_POST['description']);
     
-      mysqli_query($conn, "INSERT INTO properties (property_name, floor_area, monthly_rent, annual_range, capacity, location_type, utilities, amenities, status) 
-                          VALUES ('$name', '$floor_area', '$monthly_rent', '$annual_range', '$capacity', '$location_type', '$utilities', '$amenities', '$status')");
-      header("Location: adminhome.php");
-      exit();
-  }
+    mysqli_query($conn, "INSERT INTO properties (property_type, price_range, location, area, capacity, description) 
+                        VALUES ('$type', '$price_range', '$location', '$area', '$capacity', '$description')");
+    header("Location: adminhome.php");
+    exit();
+}
 
-  if(isset($_POST['edit_property'])) {
-      $id = $_POST['property_id'];
-      $name = mysqli_real_escape_string($conn, $_POST['property_name']);
-      $floor_area = mysqli_real_escape_string($conn, $_POST['floor_area']);
-      $monthly_rent = mysqli_real_escape_string($conn, $_POST['monthly_rent']);
-      $annual_range = mysqli_real_escape_string($conn, $_POST['annual_range']);
-      $capacity = mysqli_real_escape_string($conn, $_POST['capacity']);
-      $location_type = mysqli_real_escape_string($conn, $_POST['location_type']);
-      $utilities = mysqli_real_escape_string($conn, $_POST['utilities']);
-      $amenities = mysqli_real_escape_string($conn, $_POST['amenities']);
-      $status = mysqli_real_escape_string($conn, $_POST['status']);
+if(isset($_POST['edit_property'])) {
+    $id = $_POST['property_id'];
+    $type = mysqli_real_escape_string($conn, $_POST['property_type']);
+    $price_range = mysqli_real_escape_string($conn, $_POST['price_range']);
+    $location = mysqli_real_escape_string($conn, $_POST['location']);
+    $area = mysqli_real_escape_string($conn, $_POST['area']);
+    $capacity = mysqli_real_escape_string($conn, $_POST['capacity']);
+    $description = mysqli_real_escape_string($conn, $_POST['description']);
     
-      mysqli_query($conn, "UPDATE properties 
-                          SET property_name='$name', floor_area='$floor_area', monthly_rent='$monthly_rent',
-                              annual_range='$annual_range', capacity='$capacity', location_type='$location_type',
-                              utilities='$utilities', amenities='$amenities', status='$status'
-                          WHERE id=$id");
-      header("Location: adminhome.php");
-      exit();
-  }
+    mysqli_query($conn, "UPDATE properties 
+                        SET property_type='$type', price_range='$price_range', location='$location',
+                            area='$area', capacity='$capacity', description='$description'
+                        WHERE id=$id");
+    header("Location: adminhome.php");
+    exit();
+}
 
   if(isset($_POST['delete_property'])) {
       $id = $_POST['property_id'];
