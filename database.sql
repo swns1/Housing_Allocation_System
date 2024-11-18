@@ -7,25 +7,22 @@ CREATE TABLE users (
 
 CREATE TABLE properties (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    property_name VARCHAR(100) NOT NULL,
-    floor_area INT NOT NULL,
-    monthly_rent DECIMAL(10,2) NOT NULL,
-    annual_range VARCHAR(100) NOT NULL,
+    property_type VARCHAR(100) NOT NULL,
+    price_range VARCHAR(100) NOT NULL,
+    location VARCHAR(255) NOT NULL,
+    area INT NOT NULL,
     capacity VARCHAR(50) NOT NULL,
-    location_type VARCHAR(50) NOT NULL,
-    utilities VARCHAR(255) NOT NULL,
-    amenities VARCHAR(255) NOT NULL,
-    status VARCHAR(20) NOT NULL
+    description TEXT NOT NULL
 );
 
-INSERT INTO properties (property_name, floor_area, monthly_rent, annual_range, capacity, location_type, utilities, amenities, status) VALUES
-('Studio', 32, 4500, '₱180,000 - ₱350,000/year', '1 person', 'Urban', 'Water, Electricity', 'Laundry area, Wi-Fi', 'Available'),
-('1-Bedroom Apartment', 45, 6500, '₱250,000 - ₱400,000/year', '1-2 persons', 'Urban', 'Water, Electricity, Gas', 'Parking, Security, Gym', 'Available'),
-('2-Bedroom Apartment', 60, 8000, '₱300,000 - ₱500,000/year', '3-4 persons', 'Urban', 'Water, Electricity, Gas', 'Playground, Community Hall', 'Available'),
-('3-Bedroom House', 90, 7500, '₱300,000 - ₱600,000/year', '4-5 persons', 'Rural', 'Water, Electricity', 'Garden, Garage, Pet-friendly', 'Available'),
-('1-Bedroom Apartment', 40, 5500, '₱220,000 - ₱400,000/year', '1-2 persons', 'Urban', 'Water, Electricity', 'Library, Café', 'Available'),
-('2-Bedroom Townhouse', 75, 7000, '₱250,000 - ₱500,000/year', '3-4 persons', 'Urban', 'Water, Gas', 'Balcony, Garage, Pet-friendly', 'Available'),
-('3-Bedroom Apartment', 80, 8000, '₱300,000 - ₱500,000/year', '4-5 persons', 'Urban', 'Water, Electricity, Gas', 'Playground, Security', 'Available'),
-('4-Bedroom House', 110, 8000, '₱350,000 - ₱600,000/year', '5-6 persons', 'Rural', 'Water, Electricity', 'Swimming pool, Garage', 'Available'),
-('2-Bedroom Apartment', 55, 6000, '₱250,000 - ₱450,000/year', '3-4 persons', 'Urban', 'Water, Electricity', 'Gym, Pet-friendly', 'Available'),
-('Studio', 28, 4000, '₱150,000 - ₱300,000/year', '1 person', 'Rural', 'Water, Electricity', 'Wi-Fi, Shared workspace', 'Available');
+INSERT INTO properties (property_type, price_range, location, area, capacity, description) VALUES
+('Apartment', '200,000 - 400,000', 'Metro Manila, Quezon City', 32, '1-2 persons', 'Located near major universities, shopping malls, and MRT stations for easy commuting.'),
+('Residential Lot', '300,000 - 600,000', 'Cavite, Dasmariñas City', 50, 'N/A (Lot only)', 'Situated in a gated community, close to schools, hospitals, and public markets.'),
+('Condo', '600,000 - 1,000,000', 'Metro Manila, Makati City', 35, '1-2 persons', 'Walking distance to business districts, parks, and upscale restaurants.'),
+('House and Lot', '800,000 - 1,000,000', 'Laguna, Sta. Rosa City', 60, '3-4 persons', 'Located in a suburban area near industrial zones, schools, and commercial establishments.'),
+('Apartment', '250,000 - 500,000', 'Pampanga, Angeles City', 40, '2-3 persons', 'Close to Clark Freeport Zone, SM City Clark, and Angeles University Foundation.'),
+('Commercial', '500,000 - 1,000,000', 'Bulacan, Malolos City', 70, 'N/A (Commercial)', 'Strategically located near public markets, transportation hubs, and schools.'),
+('Residential Lot', '400,000 - 700,000', 'Rizal, Antipolo City', 80, 'N/A (Lot only)', 'Overlooks the Metro Manila skyline; near churches, resorts, and eco-tourism sites.'),
+('House and Lot', '600,000 - 900,000', 'Batangas, Lipa City', 65, '3-4 persons', 'Located in a peaceful community near Lipa Cathedral and SM City Lipa.'),
+('Condo', '700,000 - 1,000,000', 'Metro Manila, Taguig City', 30, '1 person', 'Situated in Bonifacio Global City, near high-end malls and multinational offices.'),
+('Residential Lot', '200,000 - 300,000', 'Ilocos Norte, Laoag City', 100, 'N/A (Lot only)', 'Located in a quiet area near government offices and cultural landmarks.');
