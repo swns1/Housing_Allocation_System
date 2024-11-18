@@ -32,11 +32,12 @@ if(!isset($_SESSION['email'])) {
             $housing = mysqli_query($conn, "SELECT * FROM properties");
             while($house = mysqli_fetch_array($housing)) {
                 echo "<div class='housing-card'>";
-                echo "<h3>{$house['property_name']}</h3>";
-                echo "<p>Type: {$house['property_type']}</p>";
+                echo "<h3>{$house['property_type']}</h3>";
                 echo "<p>Location: {$house['location']}</p>";
-                echo "<p>Price: $" . $house['price'] . "</p>";
-                echo "<p>Status: {$house['status']}</p>";
+                echo "<p>Price Range: {$house['price_range']}</p>";
+                echo "<p>Area: {$house['area']} sqm</p>";
+                echo "<p>Capacity: {$house['capacity']}</p>";
+                echo "<p>Description: {$house['description']}</p>";
                 echo "</div>";
             }
         ?>
