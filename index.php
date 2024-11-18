@@ -28,4 +28,10 @@
     </form>
 
 </body>
-</html>
+  <form action="adminhome.php" method="post">
+      <h1>Admin Panel</h1>
+      <input type="text" name="admin_username" placeholder="Admin Username" required>
+      <input type="password" name="admin_password" placeholder="Admin Password" required>
+      <button type="submit" name="admin_login">Admin Login</button>
+  </form>
+  </html>
