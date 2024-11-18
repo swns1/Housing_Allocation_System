@@ -7,11 +7,15 @@
 </head>
 <body>
     <h1>Forgot Password</h1>
+        <form action="register.php" method="post">
+            <label for="email">Email:</label>
+            <input type="email" name="email" placeholder="Enter email">
+            <label for="password">New Password:</label>
+            <input type="password" name="password" placeholder="Enter new password" required>
+            <label for="newPassword">Confirm Password:</label>
+            <input type="password" name="newPassword" placeholder="Enter Confirm password" required>
+            <button type="submit" name= "Confirm">Reset Password</button>
+        </form>
 
-    <label for="username">Email:</label> 
-        <input type="text" name="password" placeholder="Enter password" required>
-        <label for="password">Password:</label>
-        <input type="password" name="newPassword" placeholder="Confirm password" required>
-        <button type="submit" name= "Confirm">Confirm</button>
 </body>
 </html>
