@@ -49,22 +49,25 @@ if(isset($_POST['signUp'])){
     }
 }
 
-if(isset($_POST['login'])){
-    $email=$_POST['email'];
-    $password =$_POST['password'];
-
-    $user = new Users($email, null, $password);
-
-    $query = "SELECT * from users where email = '" .$user->getEmail() ."' and password = '" .$user->getPassword() ."'";
-    $result = $conn->query($query);
-    if($result->num_rows > 0){
-        session_start();
-        $row = $result->fetch_assoc();
-        $_SESSION['email'] = $row['email'];
-        header("Location: home.php");
+if(isset($_POST['login'])) {
+    $username = mysqli_real_escape_string($conn, $_POST['username']);
+    $password = mysqli_real_escape_string($conn, $_POST['password']);
+    
+    // Check if admin credentials
+    if($username == "admin" && $password == "admin123") {
+        $_SESSION['admin'] = true;
+        header('Location: adminhome.php');
+        exit();
+    }
+    
+    // Regular user login
+    $query = mysqli_query($conn, "SELECT * from users WHERE username='$username' AND password='$password'");
+    if(mysqli_num_rows($query) > 0) {
+        $_SESSION['username'] = $username;
+        header('Location: home.php');
         exit();
     } else {
-        echo "Incorrect email or password";
+        header('Location: index.php');
     }
 }
 
