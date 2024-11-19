@@ -36,29 +36,86 @@ if(isset($_POST['signUp'])){
     $checkEmail = "SELECT * from users where email = '" .$user->getEmail() ."'";
     $result = $conn->query($checkEmail);
     if($result->num_rows > 0){
-        echo "
+        echo  "
+        <!DOCTYPE html>
+        <html lang='en'>
+        <head>
+            <meta charset='UTF-8'>
+            <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+            <title>SweetAlert</title>
+            <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
+        </head>
+        <body>
         <script>
-            alert('Email already exists!');
-            window.history.back();
+
+        Swal.fire({
+            title: 'Error!',
+            text: 'Email already exists!',
+            icon: 'info'
+        }).then((result) => {
+            if(result.isConfirmed) {
+                window.history.back();
+            }
+        });
         </script>
-        ";
+            
+        </body>
+        </html> ";
     } else {
         $insertQuery = "INSERT INTO users(email, username, password)
          Values ('" .$user->getEmail() ."','" .$user->getUsername() ."','" .$user->getPassword() ."')";
             if($conn->query($insertQuery)){
-                echo "
-                    <script>
-                        alert('Data inserted successfully!');
-                    </script>
-                ";
-                header("location: index.php");
-            } else {
-                echo "
-                    <script>
-                        alert('Error: " . $conn->error . "');
+                echo  "
+                <!DOCTYPE html>
+                <html lang='en'>
+                <head>
+                    <meta charset='UTF-8'>
+                    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+                    <title>SweetAlert</title>
+                    <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
+                </head>
+                <body>
+                <script>
+        
+                Swal.fire({
+                    title: 'Success',
+                    text: 'Account Created!',
+                    icon: 'success'
+                 }).then((result) => {
+                    if(result.isConfirmed) {
                         window.history.back();
-                    </script>
-                ";
+                    }
+                });
+                </script>
+                    
+                </body>
+                </html> ";
+            } else {
+                echo  "
+                <!DOCTYPE html>
+                <html lang='en'>
+                <head>
+                    <meta charset='UTF-8'>
+                    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+                    <title>SweetAlert</title>
+                    <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
+                </head>
+                <body>
+                <script>
+        
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Account did not Registered!',
+                    icon: 'info'
+                }).then((result) => {
+                    if(result.isConfirmed) {
+                        window.history.back();
+                    }
+                });
+                </script>
+                    
+                </body>
+                </html> ";
             }
     }
 }
@@ -78,12 +135,31 @@ if(isset($_POST['login'])){
         header("Location: home.php");
         exit();
     } else {
-        echo "
-            <script>
-                alert('Incorrect email or password');
-                window.history.back();
-            </script>
-        ";
+                echo  "
+                <!DOCTYPE html>
+                <html lang='en'>
+                <head>
+                    <meta charset='UTF-8'>
+                    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+                    <title>SweetAlert</title>
+                    <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
+                </head>
+                <body>
+                <script>
+        
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Incorrect password or email',
+                    icon: 'error'
+                }).then((result) => {
+                    if(result.isConfirmed) {
+                        window.history.back();
+                    }
+                });
+                </script>
+                    
+                </body>
+                </html> ";
     }
 }
 
@@ -93,12 +169,31 @@ if(isset($_POST['Confirm'])){
     $confirmPassword = $_POST['newPassword'];
 
     if ($newPassword !== $confirmPassword) {
-        echo "
+        echo  "
+        <!DOCTYPE html>
+        <html lang='en'>
+        <head>
+            <meta charset='UTF-8'>
+            <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+            <title>SweetAlert</title>
+            <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
+        </head>
+        <body>
         <script>
-            alert('Passwords do not match!');   
-            window.history.back();
+
+        Swal.fire({
+            title: 'Error!',
+            text: 'Password did not match',
+            icon: 'error'
+        }).then((result) => {
+            if(result.isConfirmed) {
+                window.history.back();
+            }
+        });
         </script>
-        ";
+            
+        </body>
+        </html> ";
         exit();
     }
 
@@ -111,28 +206,82 @@ if(isset($_POST['Confirm'])){
 
         $updatePassword = "UPDATE users SET password = '" .$user->getPassword() ."' where email ='" .$user->getEmail() ."'";
         if($conn->query($updatePassword)){
-            echo "
+            echo  "
+            <!DOCTYPE html>
+            <html lang='en'>
+            <head>
+                <meta charset='UTF-8'>
+                <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+                <title>SweetAlert</title>
+                <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
+            </head>
+            <body>
             <script>
-                alert('Password updated!');
+    
+            Swal.fire({
+                title: 'Success',
+                text: 'Password is updated!',
+                icon: 'success'
+            });
             </script>
-        ";
+                
+            </body>
+            </html> ";
         header("Location: index.php");
         exit();
         }else {
-            echo "
+            echo  "
+            <!DOCTYPE html>
+            <html lang='en'>
+            <head>
+                <meta charset='UTF-8'>
+                <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+                <title>SweetAlert</title>
+                <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
+            </head>
+            <body>
             <script>
-                alert('Error Updating password');
-                window.history.back();
+    
+            Swal.fire({
+                title: 'Error!',
+                text: 'Error updating password!',
+                icon: 'error'
+            }).then((result) => {
+                if(result.isConfirmed) {
+                    window.history.back();
+                }
+            });
             </script>
-            ";
+                
+            </body>
+            </html> ";
         }
     } else {
-        echo "
+        echo  "
+        <!DOCTYPE html>
+        <html lang='en'>
+        <head>
+            <meta charset='UTF-8'>
+            <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+            <title>SweetAlert</title>
+            <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
+        </head>
+        <body>
         <script>
-            alert('Email not Found');
-            window.history.back();
+
+        Swal.fire({
+            title: 'Error!',
+            text: 'Email not found',
+            icon: 'error'
+        }).then((result) => {
+            if(result.isConfirmed) {
+                window.history.back();
+            }
+        });
         </script>
-        ";
+            
+        </body>
+        </html> ";
     }
 }
 
