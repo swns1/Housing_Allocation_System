@@ -9,6 +9,44 @@ if(isset($_GET['id'])) {
     echo json_encode($property);
     exit();
 }
+
+if(isset($_POST['add_property'])) {
+    $type = mysqli_real_escape_string($conn, $_POST['property_type']);
+    $price_range = mysqli_real_escape_string($conn, $_POST['price_range']);
+    $location = mysqli_real_escape_string($conn, $_POST['location']);
+    $area = mysqli_real_escape_string($conn, $_POST['area']);
+    $capacity = mysqli_real_escape_string($conn, $_POST['capacity']);
+    $description = mysqli_real_escape_string($conn, $_POST['description']);
+    
+    mysqli_query($conn, "INSERT INTO properties (property_type, price_range, location, area, capacity, description) 
+                        VALUES ('$type', '$price_range', '$location', '$area', '$capacity', '$description')");
+    header("Location: adminhome.php");
+    exit();
+}
+
+if(isset($_POST['edit_property'])) {
+    $id = $_POST['property_id'];
+    $type = mysqli_real_escape_string($conn, $_POST['property_type']);
+    $price_range = mysqli_real_escape_string($conn, $_POST['price_range']);
+    $location = mysqli_real_escape_string($conn, $_POST['location']);
+    $area = mysqli_real_escape_string($conn, $_POST['area']);
+    $capacity = mysqli_real_escape_string($conn, $_POST['capacity']);
+    $description = mysqli_real_escape_string($conn, $_POST['description']);
+    
+    mysqli_query($conn, "UPDATE properties 
+                        SET property_type='$type', price_range='$price_range', location='$location',
+                            area='$area', capacity='$capacity', description='$description'
+                        WHERE id=$id");
+    header("Location: adminhome.php");
+    exit();
+}
+
+if(isset($_POST['delete_property'])) {
+    $id = $_POST['property_id'];
+    mysqli_query($conn, "DELETE FROM properties WHERE id=$id");
+    header("Location: adminhome.php");
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -180,7 +218,7 @@ if(isset($_GET['id'])) {
                     });
                 });
         }
-        // Add success messages for operations
+        
         <?php if(isset($_POST['add_property'])) { ?>
             Swal.fire({
                 title: 'Success!',
@@ -199,44 +237,6 @@ if(isset($_GET['id'])) {
     </script>
 </body>
 </html>
-  <?php
-  if(isset($_POST['add_property'])) {
-    $type = mysqli_real_escape_string($conn, $_POST['property_type']);
-    $price_range = mysqli_real_escape_string($conn, $_POST['price_range']);
-    $location = mysqli_real_escape_string($conn, $_POST['location']);
-    $area = mysqli_real_escape_string($conn, $_POST['area']);
-    $capacity = mysqli_real_escape_string($conn, $_POST['capacity']);
-    $description = mysqli_real_escape_string($conn, $_POST['description']);
-    
-    mysqli_query($conn, "INSERT INTO properties (property_type, price_range, location, area, capacity, description) 
-                        VALUES ('$type', '$price_range', '$location', '$area', '$capacity', '$description')");
-    header("Location: adminhome.php");
-    exit();
-}
-
-if(isset($_POST['edit_property'])) {
-    $id = $_POST['property_id'];
-    $type = mysqli_real_escape_string($conn, $_POST['property_type']);
-    $price_range = mysqli_real_escape_string($conn, $_POST['price_range']);
-    $location = mysqli_real_escape_string($conn, $_POST['location']);
-    $area = mysqli_real_escape_string($conn, $_POST['area']);
-    $capacity = mysqli_real_escape_string($conn, $_POST['capacity']);
-    $description = mysqli_real_escape_string($conn, $_POST['description']);
-    
-    mysqli_query($conn, "UPDATE properties 
-                        SET property_type='$type', price_range='$price_range', location='$location',
-                            area='$area', capacity='$capacity', description='$description'
-                        WHERE id=$id");
-    header("Location: adminhome.php");
-    exit();
-}
-
-  if(isset($_POST['delete_property'])) {
-      $id = $_POST['property_id'];
-      mysqli_query($conn, "DELETE FROM properties WHERE id=$id");
-      header("Location: adminhome.php");
-      exit();
-  }  ?>
 
 <style>
     .swal2-input {
