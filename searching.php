@@ -139,7 +139,9 @@
 
     function buyHousing(housingID) {
       alert(`You selected Housing ID: ${housingID}`);
+      //add action here for redirecting to application page (no. 3)
     }
+
   </script>
 </body>
 </html>
