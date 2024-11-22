@@ -2,53 +2,109 @@
 session_start();
 include('connect.php');
 
+class Users {
+    public $email;
+    public $username;
+    public $password;
+    public $conn;
+}
+
+class Properties {
+    public $conn;
+    public $id;
+    public $propertyType;
+    public $priceRange;
+    public $location;
+    public $area;
+    public $capacity;
+    public $description;
+
+    public function __construct($conn) {
+        $this->conn = $conn;
+    }
+
+    public function setProperties($data) {
+        $this->id = $data['id'] ?? null;
+        $this->propertyType = $data['property_type'] ?? $data['propertyType'];
+        $this->priceRange = $data['price_range'] ?? $data['priceRange'];
+        $this->location = $data['location'];
+        $this->area = $data['area'];
+        $this->capacity = $data['capacity'];
+        $this->description = $data['description'];
+    }
+
+    public function addProperty() {
+        $query = "INSERT INTO properties (property_type, price_range, location, area, capacity, description) 
+                VALUES ('$this->propertyType', '$this->priceRange', '$this->location', '$this->area', '$this->capacity', '$this->description')";
+        return mysqli_query($this->conn, $query);
+    }
+
+    public function editProperty() {
+        $query = "UPDATE properties SET 
+                property_type='$this->propertyType', 
+                price_range='$this->priceRange', 
+                location='$this->location',
+                area='$this->area', 
+                capacity='$this->capacity', 
+                description='$this->description'
+                WHERE id=$this->id";
+        return mysqli_query($this->conn, $query);
+    }
+
+    public function deleteProperty($id) {
+        return mysqli_query($this->conn, "DELETE FROM properties WHERE id=$id");
+    }
+
+    public function getPropertyById($id) {
+        return mysqli_query($this->conn, "SELECT * FROM properties WHERE id = $id");
+    }
+
+    public function getAllProperties() {
+        return mysqli_query($this->conn, "SELECT * FROM properties");
+    }
+}
+
+$propertyManager = new Properties($conn);
+
 if(isset($_GET['id'])) {
-    $id = mysqli_real_escape_string($conn, $_GET['id']);
-    $query = mysqli_query($conn, "SELECT * FROM properties WHERE id = $id");
-    $property = mysqli_fetch_assoc($query);
-    echo json_encode($property);
+    $property = $propertyManager->getPropertyById($_GET['id']);
+    echo json_encode(mysqli_fetch_assoc($property));
     exit();
 }
 
 if(isset($_POST['add_property'])) {
-    $type = mysqli_real_escape_string($conn, $_POST['property_type']);
-    $price_range = mysqli_real_escape_string($conn, $_POST['price_range']);
-    $location = mysqli_real_escape_string($conn, $_POST['location']);
-    $area = mysqli_real_escape_string($conn, $_POST['area']);
-    $capacity = mysqli_real_escape_string($conn, $_POST['capacity']);
-    $description = mysqli_real_escape_string($conn, $_POST['description']);
+    $propertyManager->propertyType = $_POST['property_type'];
+    $propertyManager->priceRange = $_POST['price_range'];
+    $propertyManager->location = $_POST['location'];
+    $propertyManager->area = $_POST['area'];
+    $propertyManager->capacity = $_POST['capacity'];
+    $propertyManager->description = $_POST['description'];
     
-    mysqli_query($conn, "INSERT INTO properties (property_type, price_range, location, area, capacity, description) 
-                        VALUES ('$type', '$price_range', '$location', '$area', '$capacity', '$description')");
+    $propertyManager->addProperty();
     header("Location: adminhome.php");
     exit();
 }
 
 if(isset($_POST['edit_property'])) {
-    $id = $_POST['property_id'];
-    $type = mysqli_real_escape_string($conn, $_POST['property_type']);
-    $price_range = mysqli_real_escape_string($conn, $_POST['price_range']);
-    $location = mysqli_real_escape_string($conn, $_POST['location']);
-    $area = mysqli_real_escape_string($conn, $_POST['area']);
-    $capacity = mysqli_real_escape_string($conn, $_POST['capacity']);
-    $description = mysqli_real_escape_string($conn, $_POST['description']);
+    $propertyManager->id = $_POST['property_id'];
+    $propertyManager->propertyType = $_POST['property_type'];
+    $propertyManager->priceRange = $_POST['price_range'];
+    $propertyManager->location = $_POST['location'];
+    $propertyManager->area = $_POST['area'];
+    $propertyManager->capacity = $_POST['capacity'];
+    $propertyManager->description = $_POST['description'];
     
-    mysqli_query($conn, "UPDATE properties 
-                        SET property_type='$type', price_range='$price_range', location='$location',
-                            area='$area', capacity='$capacity', description='$description'
-                        WHERE id=$id");
+    $propertyManager->editProperty();
     header("Location: adminhome.php");
     exit();
 }
 
 if(isset($_POST['delete_property'])) {
-    $id = $_POST['property_id'];
-    mysqli_query($conn, "DELETE FROM properties WHERE id=$id");
+    $propertyManager->deleteProperty($_POST['property_id']);
     header("Location: adminhome.php");
     exit();
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
