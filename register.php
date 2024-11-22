@@ -2,60 +2,55 @@
 
 include 'connect.php';
 
-class Users{
+class Users {
     private $email;
     private $username;
     private $password;
+    private $conn;
 
-    public function __construct($email, $username, $password){
+    public function __construct($conn, $email, $username, $password){
+        $this->conn = $conn;
         $this->email = $email;
         $this->username = $username;
         $this->password = $password;
     }
 
-    public function getEmail(){
-        return $this->email;
+    public function getEmail() { return $this->email; }
+    public function getUsername() { return $this->username; }
+    public function getPassword() { return $this->password; }
+
+    public function signUp() {
+        $checkEmail = "SELECT * from users where email = '$this->email'";
+        $result = $this->conn->query($checkEmail);
+        if($result->num_rows > 0){
+            return "Email already exists!";
+        } 
+        $insertQuery = "INSERT INTO users(email, username, password) VALUES ('$this->email','$this->username','$this->password')";
+        if($this->conn->query($insertQuery)){
+            return "success";
+        }
+        return "Error: " . $this->conn->error;
     }
 
-    public function getUsername(){
-        return $this->username;
-    }
-
-    public function getPassword(){
-        return $this->password;
+    public function login() {
+        $query = mysqli_query($this->conn, "SELECT * from users WHERE email='$this->email' AND password='$this->password'");
+        return mysqli_num_rows($query) > 0;
     }
 }
-
 if(isset($_POST['signUp'])){
-    $email=$_POST['email'];
-    $username=$_POST['username'];
-    $password =$_POST['password'];
-
-    $user = new Users($email, $username, $password);
-
-    $checkEmail = "SELECT * from users where email = '" .$user->getEmail() ."'";
-    $result = $conn->query($checkEmail);
-    if($result->num_rows > 0){
-        echo "Email already exists!";
+    $user = new Users($conn, $_POST['email'], $_POST['username'], $_POST['password']);
+    $result = $user->signUp();
+    if($result === "success") {
+        header("location: index.php");
     } else {
-        $insertQuery = "INSERT INTO users(email, username, password)
-         Values ('" .$user->getEmail() ."','" .$user->getUsername() ."','" .$user->getPassword() ."')";
-            if($conn->query($insertQuery)){
-                echo "Data inserted successfully!";
-                header("location: index.php");
-            } else {
-                echo "Error: " .$conn->error;
-            }
+        echo $result;
     }
 }
 
 if(isset($_POST['login'])) {
-    $email = mysqli_real_escape_string($conn, $_POST['email']);
-    $password = mysqli_real_escape_string($conn, $_POST['password']);
-    
-    $query = mysqli_query($conn, "SELECT * from users WHERE email='$email' AND password='$password'");
-    if(mysqli_num_rows($query) > 0) {
-        $_SESSION['email'] = $email;
+    $user = new Users($conn, $_POST['email'], '', $_POST['password']);
+    if($user->login()) {
+        $_SESSION['email'] = $user->getEmail();
         header('Location: home.php');
         exit();
     } else {
