@@ -60,11 +60,11 @@ ul li a {
     font-family: Arial;
     font-weight: bold;
     transition: 0.4s ease-in-out;
-    white-space: nowrap; /* Prevent text wrapping */
-    text-overflow: ellipsis; /* Show ellipsis for overflow */
-    overflow: hidden; /* Hide overflow text */
-    display: inline-block; /* Ensure consistent behavior */
-    max-width: 100%; /* Limit the width of the text to the container */
+    white-space: nowrap; 
+    text-overflow: ellipsis; 
+    overflow: hidden;
+    display: inline-block; 
+    max-width: 100%; 
   }
 
   ul li a:hover {
