@@ -3,13 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Search and Filter Housing Options</title>
+  <title>Housing Offers</title>
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" href="homepage-style.css">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
 </head>
 <body>
-  <h1>Search and Filter Housing Options</h1>
+
+<div class="main">
+    <div class="navbar">
+      <div class="icon">
+        <h2 class="logo">Neighborly</h2>
+      </div>
+
+      <div class="menu">
+        <ul>
+          <li><a href="#">HOME</a></li>
+          <li><a href="#">MY PROFILE</a></li>
+          <li><a href="searching.php">HOUSING OFFERS</a></li>
+          <li><a href="#">ABOUT</a></li>
+        </ul>
+      </div>
+
+      <div class="logout">  <a href="#"> <button class="btn">LOGOUT</button></a>
+      </div>
+
+    </div>
 
   <table id="housingTable" class="display">
     <thead>
