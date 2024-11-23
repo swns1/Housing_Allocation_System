@@ -35,7 +35,7 @@ if (isset($_SESSION['email'])) {
 }
 ?>
 
-<div class="hatdog">
+<div class="nav">
         <img src="./img/pngwing.com.png" alt="logo photo" height="55">
         <a href="#Home">Home</a>
         <a href="#aboutus">About</a>
@@ -147,7 +147,6 @@ if (isset($_SESSION['email'])) {
   </footer>
 </div>
 </section>
-
 
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

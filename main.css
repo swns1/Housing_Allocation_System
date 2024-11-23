@@ -9,7 +9,7 @@ body{
     background-color: rgb(139, 137, 139);
 }
 
-.hatdog{
+.nav{
     display: flex;
     flex-direction: row;
     gap: 40px;
@@ -20,17 +20,17 @@ body{
     height: 10vh;
 }
 
-.hatdog > a{
+.nav > a{
     text-decoration: none;
     color: rgb(255, 255, 255);
     font-size: 1rem;
 }
 
-.hatdog .logo{
+.nav .logo{
     margin: auto;
 }
 
-.hatdog > img{
+.nav > img{
     position: relative;
     right: 60%;
 }

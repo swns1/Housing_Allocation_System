@@ -26,7 +26,7 @@ class Users {
     }
 }
 
-class UserHandler {
+class Methods {
     private $conn;
 
     public function __construct($conn) {
@@ -64,14 +64,14 @@ class UserHandler {
         $result = $this->conn->query($checkEmailQuery);
 
         if ($result->num_rows > 0) {
-            $this->showAlert('Error!', 'Email already exists!', 'info');
+            $this->showAlert('Error!', 'Email already exists!', 'error');
         } else {
             $insertQuery = "INSERT INTO users (email, username, password) 
                             VALUES ('" . $user->getEmail() . "', '" . $user->getUsername() . "', '" . $user->getPassword() . "')";
             if ($this->conn->query($insertQuery)) {
                 $this->showAlert('Success', 'Account Created!', 'success');
             } else {
-                $this->showAlert('Error!', 'Account did not register!', 'info');
+                $this->showAlert('Error!', 'Account did not register!', 'error');
             }
         }
     }
@@ -116,20 +116,20 @@ class UserHandler {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $userHandler = new UserHandler($conn);
+    $methods = new Methods($conn);
 
     if (isset($_POST['signUp'])) {
         $user = new Users($_POST['email'], $_POST['username'], $_POST['password']);
-        $userHandler->signUp($user);
+        $methods->signUp($user);
     }
 
     if (isset($_POST['login'])) {
         $user = new Users($_POST['email'], null, $_POST['password']);
-        $userHandler->login($user);
+        $methods->login($user);
     }
 
     if (isset($_POST['Confirm'])) {
-        $userHandler->confirmPassword($_POST['email'], $_POST['password'], $_POST['newPassword']);
+        $methods->confirmPassword($_POST['email'], $_POST['password'], $_POST['newPassword']);
     }
 }
 ?>
