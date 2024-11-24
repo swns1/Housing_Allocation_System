@@ -1,167 +1,151 @@
+<?php 
+// DatabaseHandler Class for managing database connection and queries
+class DatabaseHandler {
+    private $host = "localhost";
+    private $username = "root";
+    private $password = "";
+    private $database = "php_project";
+    private $conn;
+
+    // Constructor to initialize database connection
+    public function __construct() {
+        $this->conn = new mysqli($this->host, $this->username, $this->password, $this->database);
+
+        // Check connection
+        if ($this->conn->connect_error) {
+            die("Connection failed: " . $this->conn->connect_error);
+        }
+    }
+
+    // Method to fetch properties based on search and filters
+    public function getProperties($search = "", $filter = "") {
+        $query = "SELECT id, property_type, price_range, location, area, capacity, description FROM properties";
+
+        // Adding search and filter conditions dynamically
+        $conditions = [];
+        if (!empty($search)) {
+            $conditions[] = "(property_type LIKE '%$search%' OR location LIKE '%$search%' OR description LIKE '%$search%')";
+        }
+        if (!empty($filter)) {
+            $conditions[] = "property_type = '$filter'";
+        }
+        if (!empty($conditions)) {
+            $query .= " WHERE " . implode(" AND ", $conditions);
+        }
+
+        $result = $this->conn->query($query);
+        return $result;
+    }
+
+    // Destructor to close the database connection
+    public function __destruct() {
+        $this->conn->close();
+    }
+}
+
+// Instantiate the DatabaseHandler class
+$dbHandler = new DatabaseHandler();
+
+// Fetch properties based on search and filter input
+$search = isset($_GET['search']) ? $_GET['search'] : "";
+$filter = isset($_GET['filter']) ? $_GET['filter'] : "";
+$properties = $dbHandler->getProperties($search, $filter);
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Housing Offers</title>
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css">
-  <link rel="stylesheet" href="homepage-style.css">
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="searching-style.css">
+    <title>Housing Offers</title>
 </head>
 <body>
-
-<div class="main">
-    <div class="navbar">
-      <div class="icon">
+<div class = "cont">
+<div class="navbar">
+    <div class="icon">
         <h2 class="logo">Neighborly</h2>
-      </div>
-
-      <div class="menu">
-        <ul>
-          <li><a href="#">HOME</a></li>
-          <li><a href="#">MY PROFILE</a></li>
-          <li><a href="searching.php">HOUSING OFFERS</a></li>
-          <li><a href="#">ABOUT</a></li>
-        </ul>
-      </div>
-
-      <div class="logout">  <a href="#"> <button class="btn">LOGOUT</button></a>
-      </div>
-
     </div>
 
-  <table id="housingTable" class="display">
+    <div class="menu">
+        <ul>
+            <li><a href="homepage.php">HOME</a></li>
+            <li><a href="#">MY PROFILE</a></li>
+            <li><a href="searching.php">HOUSING OFFERS</a></li>
+            <li><a href="#">ABOUT</a></li>
+        </ul>
+    </div>
+
+    <div class="logout">  
+        <a href="#"> <button class="btn">LOGOUT</button></a>
+    </div>
+</div>
+</div>
+
+
+<h2 style="text-align: center; margin-bottom: 20px;">Properties Table</h2>
+
+<!-- Search and Filter Form -->
+<div class="search-container">
+    <form method="GET" action="">
+        <input type="text" name="search" placeholder="Search by type, location, or description" value="<?= htmlspecialchars($search) ?>">
+        <select name="filter">
+            <option value="">Filter by Property Type</option>
+            <option value="Apartment" <?= $filter == "Apartment" ? "selected" : "" ?>>Apartment</option>
+            <option value="Residential Lot" <?= $filter == "Residential Lot" ? "selected" : "" ?>>Residential Lot</option>
+            <option value="Condo" <?= $filter == "Condo" ? "selected" : "" ?>>Condo</option>
+            <option value="House and Lot" <?= $filter == "House and Lot" ? "selected" : "" ?>>House and Lot</option>
+            <option value="Commercial" <?= $filter == "Commercial" ? "selected" : "" ?>>Commercial</option>
+        </select>
+        <button type="submit">Search</button>
+    </form>
+</div>
+
+<!-- Properties Table -->
+<table>
     <thead>
-      <tr>
-        <th>Housing ID</th>
-        <th>Property Type</th>
-        <th>Price Range (PHP)</th>
-        <th>Location</th>
-        <th>Size (sqm)</th>
-        <th>Eligible Family Size</th>
-        <th>Location Description</th>
-        <th>Action</th>
-      </tr>
+        <tr>
+            <th>ID</th>
+            <th>Property Type</th>
+            <th>Price Range</th>
+            <th>Location</th>
+            <th>Area (sqm)</th>
+            <th>Capacity</th>
+            <th>Description</th>
+            <th>Action</th>
+        </tr>
     </thead>
     <tbody>
-      <tr>
-        <td>1</td>
-        <td>Apartment</td>
-        <td>200,000 - 400,000</td>
-        <td>Metro Manila, Quezon City</td>
-        <td>32</td>
-        <td>1-2 persons</td>
-        <td>Located near major universities, shopping malls, and MRT stations for easy commuting.</td>
-        <td><button onclick="buyHousing('1')">Buy</button></td>
-      </tr>
-      <tr>
-        <td>2</td>
-        <td>Residential Lot</td>
-        <td>300,000 - 600,000</td>
-        <td>Cavite, Dasmariñas City</td>
-        <td>50</td>
-        <td>N/A (Lot only)</td>
-        <td>Situated in a gated community, close to schools, hospitals, and public markets.</td>
-        <td><button onclick="buyHousing('2')">Buy</button></td>
-      </tr>
-      <tr>
-        <td>3</td>
-        <td>Condo</td>
-        <td>600,000 - 1,000,000</td>
-        <td>Metro Manila, Makati City</td>
-        <td>35</td>
-        <td>1-2 persons</td>
-        <td>Walking distance to business districts, parks, and upscale restaurants.</td>
-        <td><button onclick="buyHousing('3')">Buy</button></td>
-      </tr>
-      <tr>
-        <td>4</td>
-        <td>House and Lot</td>
-        <td>800,000 - 1,000,000</td>
-        <td>Laguna, Sta. Rosa City</td>
-        <td>60</td>
-        <td>3-4 persons</td>
-        <td>Located in a suburban area near industrial zones, schools, and commercial establishments.</td>
-        <td><button onclick="buyHousing('4')">Buy</button></td>
-      </tr>
-      <tr>
-        <td>5</td>
-        <td>Apartment</td>
-        <td>250,000 - 500,000</td>
-        <td>Pampanga, Angeles City</td>
-        <td>40</td>
-        <td>2-3 persons</td>
-        <td>Close to Clark Freeport Zone, SM City Clark, and Angeles University Foundation.</td>
-        <td><button onclick="buyHousing('5')">Buy</button></td>
-      </tr>
-      <tr>
-        <td>6</td>
-        <td>Commercial</td>
-        <td>500,000 - 1,000,000</td>
-        <td>Bulacan, Malolos City</td>
-        <td>70</td>
-        <td>N/A (Commercial)</td>
-        <td>Strategically located near public markets, transportation hubs, and schools.</td>
-        <td><button onclick="buyHousing('6')">Buy</button></td>
-      </tr>
-      <tr>
-        <td>7</td>
-        <td>Residential Lot</td>
-        <td>400,000 - 700,000</td>
-        <td>Rizal, Antipolo City</td>
-        <td>80</td>
-        <td>N/A (Lot only)</td>
-        <td>Overlooks the Metro Manila skyline; near churches, resorts, and eco-tourism sites.</td>
-        <td><button onclick="buyHousing('7')">Buy</button></td>
-      </tr>
-      <tr>
-        <td>8</td>
-        <td>House and Lot</td>
-        <td>600,000 - 900,000</td>
-        <td>Batangas, Lipa City</td>
-        <td>65</td>
-        <td>3-4 persons</td>
-        <td>Located in a peaceful community near Lipa Cathedral and SM City Lipa.</td>
-        <td><button onclick="buyHousing('8')">Buy</button></td>
-      </tr>
-      <tr>
-        <td>9</td>
-        <td>Condo</td>
-        <td>700,000 - 1,000,000</td>
-        <td>Metro Manila, Taguig City</td>
-        <td>30</td>
-        <td>1 person</td>
-        <td>Situated in Bonifacio Global City, near high-end malls and multinational offices.</td>
-        <td><button onclick="buyHousing('9')">Buy</button></td>
-      </tr>
-      <tr>
-        <td>10</td>
-        <td>Residential Lot</td>
-        <td>200,000 - 300,000</td>
-        <td>Ilocos Norte, Laoag City</td>
-        <td>100</td>
-        <td>N/A (Lot only)</td>
-        <td>Located in a quiet area near government offices and cultural landmarks.</td>
-        <td><button onclick="buyHousing('10')">Buy</button></td>
-      </tr>
+
+        <?php
+        if ($properties->num_rows > 0) {
+            // Output data of each row
+            while ($row = $properties->fetch_assoc()) {
+                echo "<tr>";
+                echo "<td>" . $row['id'] . "</td>";
+                echo "<td>" . $row['property_type'] . "</td>";
+                echo "<td>" . $row['price_range'] . "</td>";
+                echo "<td>" . $row['location'] . "</td>";
+                echo "<td>" . $row['area'] . "</td>";
+                echo "<td>" . $row['capacity'] . "</td>";
+                echo "<td>" . $row['description'] . "</td>";
+                echo "<td><button class='buy-button' onclick='buyProperty(" . $row['id'] . ")'>Buy</button></td>";
+                echo "</tr>";
+            }
+        } else {
+            echo "<tr><td colspan='8'>No properties found</td></tr>";
+        }
+        ?>
     </tbody>
-  </table>
+</table>
 
-  <script>
-    $(document).ready(function() {
-      $('#housingTable').DataTable({
-        pageLength: 5,
-        searching: true,
-        lengthChange: false
-      });
-    });
-
-    function buyHousing(housingID) {
-      alert(`You selected Housing ID: ${housingID}`);
-      //add action here for redirecting to application page (no. 3)
+<script>
+    function buyProperty(propertyId) {
+        alert("Property with ID " + propertyId + " has been selected for purchase!");
+        // You can expand this function to redirect to a purchase page or send the property ID to the server.
     }
+</script>
 
-  </script>
 </body>
 </html>
