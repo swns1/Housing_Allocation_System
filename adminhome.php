@@ -8,10 +8,9 @@ class Users {
     public $password;
     public $conn;
 }
-
-class Properties {
-    public $conn;
-    public $id;
+  class Properties {
+      public $conn;
+      public $id;
     public $propertyType;
     public $priceRange;
     public $location;
@@ -73,27 +72,12 @@ if(isset($_GET['id'])) {
 }
 
 if(isset($_POST['add_property'])) {
-    $propertyManager->propertyType = $_POST['property_type'];
-    $propertyManager->priceRange = $_POST['price_range'];
-    $propertyManager->location = $_POST['location'];
-    $propertyManager->area = $_POST['area'];
-    $propertyManager->capacity = $_POST['capacity'];
-    $propertyManager->description = $_POST['description'];
-    
     $propertyManager->addProperty();
     header("Location: adminhome.php");
     exit();
 }
 
 if(isset($_POST['edit_property'])) {
-    $propertyManager->id = $_POST['property_id'];
-    $propertyManager->propertyType = $_POST['property_type'];
-    $propertyManager->priceRange = $_POST['price_range'];
-    $propertyManager->location = $_POST['location'];
-    $propertyManager->area = $_POST['area'];
-    $propertyManager->capacity = $_POST['capacity'];
-    $propertyManager->description = $_POST['description'];
-    
     $propertyManager->editProperty();
     header("Location: adminhome.php");
     exit();
@@ -103,8 +87,7 @@ if(isset($_POST['delete_property'])) {
     $propertyManager->deleteProperty($_POST['property_id']);
     header("Location: adminhome.php");
     exit();
-}
-?>
+}?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -264,17 +247,9 @@ if(isset($_POST['delete_property'])) {
                                 Swal.showValidationMessage(`Request failed: ${error}`);
                             });
                         }
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            Swal.fire('Updated!', 'Property has been updated.', 'success')
-                            .then(() => {
-                                window.location.reload();
-                            });
-                        }
                     });
                 });
-        }
-        
+        }        
         <?php if(isset($_POST['add_property'])) { ?>
             Swal.fire({
                 title: 'Success!',
@@ -295,11 +270,28 @@ if(isset($_POST['delete_property'])) {
 </html>
 
 <style>
+    #addPropertyForm {
+    display: flex;
+    flex-direction: column;
+    max-width: 500px;
+    gap: 10px;
+    }
+
+    #addPropertyForm select,
+    #addPropertyForm input,
+    #addPropertyForm textarea {
+        width: 100%;
+        padding: 8px;
+    }
+
     .swal2-input {
         margin: 10px auto !important;
         width: 80% !important;
     }
+    
     textarea.swal2-input {
         height: 100px !important;
     }
 </style>
+
+
