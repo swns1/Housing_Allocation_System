@@ -19,7 +19,7 @@ class DatabaseHandler {
 
     // Method to fetch properties based on search and filters
     public function getProperties($search = "", $filter = "") {
-        $query = "SELECT id, property_type, price_range, location, area, capacity, description FROM properties";
+        $query = "SELECT id, property_type, price_range, location, area, capacity, description,photos FROM properties";
 
         // Adding search and filter conditions dynamically
         $conditions = [];
@@ -224,28 +224,31 @@ $properties = $dbHandler->getProperties($search, $filter);
     </div>
 
     <div class="properties-grid">
-        <?php
-        if ($properties->num_rows > 0) {
-            while ($row = $properties->fetch_assoc()) {
-                echo '<div class="property-card">';
-                echo '<img src="/placeholder.svg?height=200&width=300" alt="Property" class="property-image">';
-                echo '<div class="property-details">';
-                echo '<div class="property-type">' . htmlspecialchars($row['property_type']) . '</div>';
-                echo '<div class="property-location">' . htmlspecialchars($row['location']) . '</div>';
-                echo '<div class="property-specs">';
-                echo '<span>Area: ' . htmlspecialchars($row['area']) . ' sqm</span>';
-                echo '<span>Capacity: ' . htmlspecialchars($row['capacity']) . '</span>';
-                echo '</div>';
-                echo '<div class="property-price">₱' . htmlspecialchars($row['price_range']) . '</div>';
-                echo '<button class="buy-now" onclick="buyProperty(' . $row['id'] . ')">Buy Now</button>';
-                echo '</div>';
-                echo '</div>';
-            }
-        } else {
-            echo '<p style="text-align: center; grid-column: 1 / -1;">No properties found</p>';
+    <?php
+    if ($properties->num_rows > 0) {
+        while ($row = $properties->fetch_assoc()) {
+            // Properly handle the photo path
+            $photoPath = !empty($row['photos']) ? 'php_pics/' . htmlspecialchars($row['photos']) : '/placeholder.svg';
+            
+            echo '<div class="property-card">';
+            echo '<img src="' . $photoPath . '" alt="Property" class="property-image">';
+            echo '<div class="property-details">';
+            echo '<div class="property-type">' . htmlspecialchars($row['property_type']) . '</div>';
+            echo '<div class="property-location">' . htmlspecialchars($row['location']) . '</div>';
+            echo '<div class="property-specs">';
+            echo '<span>Area: ' . htmlspecialchars($row['area']) . ' sqm</span>';
+            echo '<span>Capacity: ' . htmlspecialchars($row['capacity']) . '</span>';
+            echo '</div>';
+            echo '<div class="property-price">₱' . htmlspecialchars($row['price_range']) . '</div>';
+            echo '<button class="buy-now" onclick="buyProperty(' . $row['id'] . ')">Buy Now</button>';
+            echo '</div>';
+            echo '</div>';
         }
-        ?>
-    </div>
+    } else {
+        echo '<p style="text-align: center; grid-column: 1 / -1;">No properties found</p>';
+    }
+    ?>
+</div>
 
     <script>
         function buyProperty(propertyId) {
