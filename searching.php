@@ -1,4 +1,4 @@
-<?php 
+<?php  
 // DatabaseHandler Class for managing database connection and queries
 class DatabaseHandler {
     private $host = "localhost";
@@ -19,7 +19,7 @@ class DatabaseHandler {
 
     // Method to fetch properties based on search and filters
     public function getProperties($search = "", $filter = "") {
-        $query = "SELECT id, property_type, price_range, location, area, capacity, description,photos FROM properties";
+        $query = "SELECT id, property_type, price_range, location, area, capacity, description, photos FROM properties";
 
         // Adding search and filter conditions dynamically
         $conditions = [];
@@ -50,147 +50,15 @@ $dbHandler = new DatabaseHandler();
 $search = isset($_GET['search']) ? $_GET['search'] : "";
 $filter = isset($_GET['filter']) ? $_GET['filter'] : "";
 $properties = $dbHandler->getProperties($search, $filter);
-
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="searching-style.css">
     <title>Housing Offers</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-        }
-
-        .navbar {
-            background-color: white;
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .logo {
-            color: #4F46E5;
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-
-        .menu ul {
-            display: flex;
-            list-style: none;
-            gap: 8rem;
-        }
-
-        .menu a {
-            text-decoration: none;
-            color: #374151;
-        }
-
-        .btn {
-            background-color: #4F46E5;
-            color: white;
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 0.375rem;
-            cursor: pointer;
-        }
-
-        .search-container {
-            max-width: 800px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-        }
-
-        .search-container form {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .search-container input,
-        .search-container select {
-            padding: 0.5rem;
-            border: 1px solid #D1D5DB;
-            border-radius: 0.375rem;
-        }
-
-        .search-container input {
-            flex: 1;
-        }
-
-        .properties-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 2rem;
-            padding: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .property-card {
-            border-radius: 0.5rem;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            background: white;
-        }
-
-        .property-image {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-
-        .property-details {
-            padding: 1rem;
-        }
-
-        .property-type {
-            color: #6B7280;
-            font-size: 0.875rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .property-location {
-            font-weight: bold;
-            font-size: 1.125rem;
-            margin-bottom: 1rem;
-        }
-
-        .property-specs {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 1rem;
-            color: #6B7280;
-            font-size: 0.875rem;
-        }
-
-        .property-price {
-            font-weight: bold;
-            margin-bottom: 1rem;
-        }
-
-        .buy-now {
-            width: 100%;
-            background-color: #10B981;
-            color: white;
-            padding: 0.75rem;
-            border: none;
-            border-radius: 0.375rem;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .buy-now:hover {
-            background-color: #059669;
-        }
-    </style>
 </head>
 <body>
     <nav class="navbar">
