@@ -26,14 +26,14 @@ class Users {
     }
 }
 
-class Methods {
-    private $conn;
+abstract class BaseMethod {
+    protected $conn;
 
     public function __construct($conn) {
         $this->conn = $conn;
     }
 
-    private function showAlert($title, $message, $type) {
+    protected function showAlert($title, $message, $type) {
         echo "
         <!DOCTYPE html>
         <html lang='en'>
@@ -59,7 +59,11 @@ class Methods {
         </html>";
     }
 
-    public function signUp($user) {
+    abstract public function execute($data);
+}
+
+class SignUp extends BaseMethod {
+    public function execute($user) {
         $checkEmailQuery = "SELECT * FROM users WHERE email = '" . $user->getEmail() . "'";
         $result = $this->conn->query($checkEmailQuery);
 
@@ -75,8 +79,10 @@ class Methods {
             }
         }
     }
+}
 
-    public function login($user) {
+class Login extends BaseMethod {
+    public function execute($user) {
         $query = "SELECT * FROM users WHERE email = '" . $user->getEmail() . "' AND password = '" . $user->getPassword() . "'";
         $result = $this->conn->query($query);
 
@@ -84,25 +90,52 @@ class Methods {
             session_start();
             $row = $result->fetch_assoc();
             $_SESSION['email'] = $row['email'];
-            header("Location: home.php");
+            $_SESSION['username'] = $row['username'];
+            echo "
+            <!DOCTYPE html>
+            <html lang='en'>
+            <head>
+                <meta charset='UTF-8'>
+                <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+                <title>SweetAlert</title>
+                <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
+            </head>
+            <body>
+            <script>
+                Swal.fire({
+                    title: 'Hello, {$row['username']}!',
+                    text: 'Welcome back!',
+                    icon: 'success'
+                }).then(() => {
+                    window.location.href = 'home.php';
+                });
+            </script>
+            </body>
+            </html>";
             exit();
         } else {
             $this->showAlert('Error!', 'Incorrect email or password.', 'error');
         }
     }
+}
 
-    public function confirmPassword($email, $newPassword, $confirmPassword) {
+class ConfirmPassword extends BaseMethod {
+    public function execute($data) {
+        $email = $data['email'];
+        $newPassword = $data['newPassword'];
+        $confirmPassword = $data['confirmPassword'];
+
         if ($newPassword !== $confirmPassword) {
             $this->showAlert('Error!', 'Passwords do not match.', 'error');
             return;
         }
 
-        $checkEmailQuery = "SELECT * FROM users WHERE email = '{$email}'";
+        $checkEmailQuery = "SELECT * FROM users WHERE email = '" . $email . "'";
         $result = $this->conn->query($checkEmailQuery);
 
         if ($result->num_rows > 0) {
-            $updatePasswordQuery = "UPDATE users SET password = '{$confirmPassword}' WHERE email = '{$email}'";
-            if ($this->conn->query($updatePasswordQuery)) {
+            $updatePassword = "UPDATE users SET password = '" . $confirmPassword . "' WHERE email = '" . $email . "'";
+            if ($this->conn->query($updatePassword)) {
                 $this->showAlert('Success', 'Password updated successfully!', 'success');
                 header("Location: index.php");
                 exit();
@@ -116,20 +149,26 @@ class Methods {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $methods = new Methods($conn);
-
     if (isset($_POST['signUp'])) {
         $user = new Users($_POST['email'], $_POST['username'], $_POST['password']);
-        $methods->signUp($user);
+        $connect = new SignUp($conn);
+        $connect->execute($user);
     }
 
     if (isset($_POST['login'])) {
         $user = new Users($_POST['email'], null, $_POST['password']);
-        $methods->login($user);
+        $connect = new Login($conn);
+        $connect->execute($user);
     }
 
     if (isset($_POST['Confirm'])) {
-        $methods->confirmPassword($_POST['email'], $_POST['password'], $_POST['newPassword']);
+        $data = [
+            'email' => $_POST['email'],
+            'newPassword' => $_POST['newPassword'],
+            'confirmPassword' => $_POST['confirmPassword']
+        ];
+        $connect = new ConfirmPassword($conn);
+        $connect->execute($data);
     }
 }
 ?>

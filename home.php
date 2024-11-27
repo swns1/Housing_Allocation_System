@@ -3,6 +3,7 @@
 session_start();
 include('connect.php');
 
+$result = $conn->query("SELECT * FROM properties WHERE id NOT IN (SELECT property_id FROM buyers WHERE status = 'approved')");
 ?>
 
 <!DOCTYPE html>
@@ -10,32 +11,17 @@ include('connect.php');
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="main.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" href="main.css">
     <title>Home</title>
 </head>
 <body>
-<?php
-if (isset($_SESSION['email'])) {
-    $email = $_SESSION['email'];
-    $query = mysqli_query($conn, "SELECT users.* FROM `users` WHERE users.email = '$email'");
-    while ($row = mysqli_fetch_array($query)) {
-        echo "
-            <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
-            <script>
-                Swal.fire({
-                    title: 'Hello, " . $row['username'] . "!',
-                    text: 'Welcome back!',
-                    icon: 'success'
-                });
-            </script>
-        ";
-    }
-}
-?>
 
-<div class="nav">
+<div class="navbar">
         <img src="./img/pngwing.com.png" alt="logo photo" height="55">
         <a href="#Home">Home</a>
         <a href="#aboutus">About</a>
@@ -109,6 +95,67 @@ if (isset($_SESSION['email'])) {
             <span class="visually-hidden">Next</span>
         </button>
     </div>
+
+    <div class="containers">
+        <h1>Available Properties</h1>
+        <div class="property-grid">
+            <?php while ($row = $result->fetch_assoc()): ?>
+                <div class="property-card">
+                <div class="property-image" aria-label="Generic property image"></div>
+                    <div class="property-details">
+                        <div class="property-type"><?= $row['property_type'] ?></div>
+                        <div class="property-location"><?= $row['location'] ?></div>
+                        <div class="property-info">
+                            <span>Area: <?= $row['area'] ?> sqm</span>
+                            <span>Capacity: <?= $row['capacity'] ?></span>
+                        </div>
+                        <div class="property-info">
+                            <span>Price Range: <?= $row['price_range'] ?></span>
+                        </div>
+                        <button class="buy-btn" data-id="<?= $row['id'] ?>" data-toggle="modal" data-target="#buyModal">Buy Now</button>
+                    </div>
+                </div>
+            <?php endwhile; ?>
+        </div>
+    </div>
+
+<div class="modal fade" id="buyModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <form action="buyer.php" method="POST" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Buyer Information</h5>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" name="property_id" id="propertyId">
+
+                <div class="form-group">
+                    <label for="fullname">Full Name</label>
+                    <input type="text" name="fullname" id="fullname" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" name="email" id="email" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone</label>
+                    <input type="text" name="phone" id="phone" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea name="message" id="message" class="form-control" rows="4"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="submit" name="submitBuyer" class="btn btn-success">Buy</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 </section>
 
 <section id="aboutus">
@@ -150,5 +197,23 @@ if (isset($_SESSION['email'])) {
 
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="scripts/jquery.min.js"></script>
+  <script src="scripts/bootstrap.bundle.min.js"></script>
+  <script src="scripts/datatables.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        $('#propertiesTable').DataTable();
+
+        document.querySelectorAll('.buy-btn').forEach(function(button) {
+            button.addEventListener('click', function () {
+                const propertyId = this.getAttribute('data-id');
+                document.getElementById('propertyId').value = propertyId;
+
+                var buyModal = new bootstrap.Modal(document.getElementById('buyModal'));
+                buyModal.show();
+            });
+        });
+    });
+</script>
 </body>
 </html>
