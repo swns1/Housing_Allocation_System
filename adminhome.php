@@ -21,17 +21,14 @@ class Users {
     public function __construct($conn) {
         $this->conn = $conn;
     }
-
-    public function setProperties($data) {
-        $this->id = $data['id'] ?? null;
-        $this->propertyType = $data['property_type'] ?? $data['propertyType'];
-        $this->priceRange = $data['price_range'] ?? $data['priceRange'];
-        $this->location = $data['location'];
-        $this->area = $data['area'];
-        $this->capacity = $data['capacity'];
-        $this->description = $data['description'];
-    }
-
+      public function setProperties($data) {
+          $this->propertyType = mysqli_real_escape_string($this->conn, $data['property_type']);
+          $this->priceRange = mysqli_real_escape_string($this->conn, $data['price_range']);
+          $this->location = mysqli_real_escape_string($this->conn, $data['location']);
+          $this->area = mysqli_real_escape_string($this->conn, $data['area']);
+          $this->capacity = mysqli_real_escape_string($this->conn, $data['capacity']);
+          $this->description = mysqli_real_escape_string($this->conn, $data['description']);
+      }
     public function addProperty() {
         $query = "INSERT INTO properties (property_type, price_range, location, area, capacity, description) 
                 VALUES ('$this->propertyType', '$this->priceRange', '$this->location', '$this->area', '$this->capacity', '$this->description')";
@@ -72,13 +69,18 @@ if(isset($_GET['id'])) {
 }
 
 if(isset($_POST['add_property'])) {
+    $propertyManager->setProperties($_POST);
     $propertyManager->addProperty();
+    $_SESSION['success_message'] = "Property added successfully";
     header("Location: adminhome.php");
     exit();
 }
 
 if(isset($_POST['edit_property'])) {
+    $propertyManager->setProperties($_POST);
+    $propertyManager->id = $_POST['property_id'];
     $propertyManager->editProperty();
+    $_SESSION['success_message'] = "Property updated successfully";
     header("Location: adminhome.php");
     exit();
 }
@@ -162,111 +164,106 @@ if(isset($_POST['delete_property'])) {
             </tbody>
         </table>
     </div>
+      <script>
+          $(document).ready(function() {
+              $('#propertyTable').DataTable();
+          });
 
-    <script>
-        $(document).ready(function() {
-            $('#propertyTable').DataTable();
-        });
+          function deleteProperty(id) {
+              Swal.fire({
+                  title: 'Are you sure?',
+                  text: "You won't be able to revert this!",
+                  icon: 'warning',
+                  showCancelButton: true,
+                  confirmButtonColor: '#3085d6',
+                  cancelButtonColor: '#d33',
+                  confirmButtonText: 'Yes, delete it!'
+              }).then((result) => {
+                  if (result.isConfirmed) {
+                      let form = document.createElement('form');
+                      form.method = 'POST';
+                      form.action = 'adminhome.php';
+                
+                      let input = document.createElement('input');
+                      input.type = 'hidden';
+                      input.name = 'property_id';
+                      input.value = id;
+                
+                      let button = document.createElement('input');
+                      button.type = 'hidden';
+                      button.name = 'delete_property';
+                
+                      form.appendChild(input);
+                      form.appendChild(button);
+                      document.body.appendChild(form);
+                      form.submit();
+                  }
+              });
+          }
 
-        function deleteProperty(id) {
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, delete it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    let form = document.createElement('form');
-                    form.method = 'POST';
-                    form.action = 'adminhome.php';
-                    
-                    let input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = 'property_id';
-                    input.value = id;
-                    
-                    let button = document.createElement('input');
-                    button.type = 'hidden';
-                    button.name = 'delete_property';
-                    
-                    form.appendChild(input);
-                    form.appendChild(button);
-                    document.body.appendChild(form);
-                    form.submit();
-                }
-            });
-        }
+          function editProperty(id) {
+              fetch(`adminhome.php?id=${id}`)
+                  .then(response => response.json())
+                  .then(property => {
+                      Swal.fire({
+                          title: 'Edit Property',
+                          html: `
+                              <select id="property_type" class="swal2-input">
+                                  <option value="Apartment" ${property.property_type === 'Apartment' ? 'selected' : ''}>Apartment</option>
+                                  <option value="Residential Lot" ${property.property_type === 'Residential Lot' ? 'selected' : ''}>Residential Lot</option>
+                                  <option value="Condo" ${property.property_type === 'Condo' ? 'selected' : ''}>Condo</option>
+                                  <option value="House and Lot" ${property.property_type === 'House and Lot' ? 'selected' : ''}>House and Lot</option>
+                                  <option value="Commercial" ${property.property_type === 'Commercial' ? 'selected' : ''}>Commercial</option>
+                              </select>
+                              <input type="text" id="price_range" class="swal2-input" placeholder="Price Range" value="${property.price_range}">
+                              <input type="text" id="location" class="swal2-input" placeholder="Location" value="${property.location}">
+                              <input type="number" id="area" class="swal2-input" placeholder="Area (sqm)" value="${property.area}">
+                              <input type="text" id="capacity" class="swal2-input" placeholder="Capacity" value="${property.capacity}">
+                              <textarea id="description" class="swal2-input" placeholder="Description">${property.description}</textarea>
+                          `,
+                          showCancelButton: true,
+                          confirmButtonText: 'Update',
+                          preConfirm: () => {
+                              const formData = new FormData();
+                              formData.append('property_id', id);
+                              formData.append('property_type', document.getElementById('property_type').value);
+                              formData.append('price_range', document.getElementById('price_range').value);
+                              formData.append('location', document.getElementById('location').value);
+                              formData.append('area', document.getElementById('area').value);
+                              formData.append('capacity', document.getElementById('capacity').value);
+                              formData.append('description', document.getElementById('description').value);
+                              formData.append('edit_property', true);
 
-        function editProperty(id) {
-            fetch(`adminhome.php?id=${id}`)
-                .then(response => response.json())
-                .then(property => {
-                    Swal.fire({
-                        title: 'Edit Property',
-                        html: `
-                            <select id="property_type" class="swal2-input">
-                                <option value="Apartment" ${property.property_type === 'Apartment' ? 'selected' : ''}>Apartment</option>
-                                <option value="Residential Lot" ${property.property_type === 'Residential Lot' ? 'selected' : ''}>Residential Lot</option>
-                                <option value="Condo" ${property.property_type === 'Condo' ? 'selected' : ''}>Condo</option>
-                                <option value="House and Lot" ${property.property_type === 'House and Lot' ? 'selected' : ''}>House and Lot</option>
-                                <option value="Commercial" ${property.property_type === 'Commercial' ? 'selected' : ''}>Commercial</option>
-                            </select>
-                            <input type="text" id="price_range" class="swal2-input" placeholder="Price Range" value="${property.price_range}">
-                            <input type="text" id="location" class="swal2-input" placeholder="Location" value="${property.location}">
-                            <input type="number" id="area" class="swal2-input" placeholder="Area (sqm)" value="${property.area}">
-                            <input type="text" id="capacity" class="swal2-input" placeholder="Capacity" value="${property.capacity}">
-                            <textarea id="description" class="swal2-input" placeholder="Description">${property.description}</textarea>
-                        `,
-                        showCancelButton: true,
-                        confirmButtonText: 'Update',
-                        preConfirm: () => {
-                            const formData = new FormData();
-                            formData.append('property_id', id);
-                            formData.append('property_type', document.getElementById('property_type').value);
-                            formData.append('price_range', document.getElementById('price_range').value);
-                            formData.append('location', document.getElementById('location').value);
-                            formData.append('area', document.getElementById('area').value);
-                            formData.append('capacity', document.getElementById('capacity').value);
-                            formData.append('description', document.getElementById('description').value);
-                            formData.append('edit_property', true);
-
-                            return fetch('adminhome.php', {
-                                method: 'POST',
-                                body: formData
-                            })
-                            .then(response => {
-                                if (!response.ok) {
-                                    throw new Error(response.statusText);
-                                }
-                                return response;
-                            })
-                            .catch(error => {
-                                Swal.showValidationMessage(`Request failed: ${error}`);
-                            });
-                        }
-                    });
-                });
-        }        
-        <?php if(isset($_POST['add_property'])) { ?>
-            Swal.fire({
-                title: 'Success!',
-                text: 'Property added successfully',
-                icon: 'success'
-            });
-        <?php } ?>
-
-        <?php if(isset($_POST['edit_property'])) { ?>
-            Swal.fire({
-                title: 'Success!',
-                text: 'Property updated successfully',
-                icon: 'success'
-            });
-        <?php } ?>
-    </script>
-</body>
+                              return fetch('adminhome.php', {
+                                  method: 'POST',
+                                  body: formData
+                              })
+                              .then(response => {
+                                  if (!response.ok) {
+                                      throw new Error(response.statusText);
+                                  }
+                                  return response;
+                              })
+                              .catch(error => {
+                                  Swal.showValidationMessage(`Request failed: ${error}`);
+                              });
+                          }
+                      });
+                  });
+          }        
+    
+          <?php 
+          if(isset($_SESSION['success_message'])) {
+              echo "Swal.fire({
+                  title: 'Success!',
+                  text: '{$_SESSION['success_message']}',
+                  icon: 'success'
+              });";
+              unset($_SESSION['success_message']);
+          }
+          ?>
+      </script>
+      </body>
 </html>
 
 <style>
