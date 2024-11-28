@@ -12,13 +12,13 @@
         <a href="#" class="logo">Neighborly</a>
         <div class="menu">
             <ul>
-                <li><a href="#">HOME</a></li>
+                <li><a href="homepage.php">HOME</a></li>
                 <li><a href="#">MY PROFILE</a></li>
                 <li><a href="searching.php">HOUSING OFFERS</a></li>
                 <li><a href="#">ABOUT</a></li>
             </ul>
         </div>
-        <a href="#" class="btn">LOGOUT</a>
+        <a href="register.php" class="btn">LOGOUT</a>
     </nav>
 
     <!-- Hero Section -->
