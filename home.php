@@ -1,5 +1,4 @@
 <?php
-
 session_start();
 include('connect.php');
 
@@ -16,31 +15,30 @@ $result = $conn->query("SELECT * FROM properties WHERE id NOT IN (SELECT propert
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
-    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="./css/main.css">
     <title>Home</title>
 </head>
 <body>
 
 <div class="navbar">
-        <img src="./img/pngwing.com.png" alt="logo photo" height="55">
-        <a href="#Home">Home</a>
-        <a href="#aboutus">About</a>
-        <a href="logout.php">Log out</a>
-        <a href="#">
-            <?php
-                if (isset($_SESSION['email'])) {
-                    $email = $_SESSION['email'];
-                    $query = mysqli_query($conn, "SELECT users.* FROM `users` WHERE users.email = '$email'");
-                    while ($row = mysqli_fetch_array($query)) {
-                        echo $row['username'];
-                    }
+    <img src="./img/pngwing.com.png" alt="logo photo" height="55">
+    <a href="#Home">Home</a>
+    <a href="#aboutus">About</a>
+    <a href="logout.php">Log out</a>
+    <a href="#">
+        <?php
+            if (isset($_SESSION['email'])) {
+                $email = $_SESSION['email'];
+                $query = mysqli_query($conn, "SELECT users.* FROM `users` WHERE users.email = '$email'");
+                while ($row = mysqli_fetch_array($query)) {
+                    echo $row['username'];
                 }
-            ?>
-        </a>
-    </div>
+            }
+        ?>
+    </a>
+</div>
 
 <section id="home">
-
     <div class="px-4 py-5 my-5 text-center">
         <h1 class="display-5 fw-bold text-body-emphasis">House Allocating System</h1>
         <div class="col-lg-6 mx-auto">
@@ -124,7 +122,6 @@ $result = $conn->query("SELECT * FROM properties WHERE id NOT IN (SELECT propert
         <form action="buyer.php" method="POST" class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Buyer Information</h5>
-                </button>
             </div>
             <div class="modal-body">
                 <input type="hidden" name="property_id" id="propertyId">
@@ -176,7 +173,7 @@ $result = $conn->query("SELECT * FROM properties WHERE id NOT IN (SELECT propert
             <h2 class="fw-normal">Heading</h2>
             <p>And lastly this, the third column of representative placeholder content.</p>
         </div><!-- /.col-lg-4 -->
-        </div>
+    </div>
 </div>
 </section>
 
@@ -195,12 +192,8 @@ $result = $conn->query("SELECT * FROM properties WHERE id NOT IN (SELECT propert
 </div>
 </section>
 
-
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script src="scripts/jquery.min.js"></script>
-  <script src="scripts/bootstrap.bundle.min.js"></script>
-  <script src="scripts/datatables.min.js"></script>
-  <script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
     document.addEventListener('DOMContentLoaded', function () {
         $('#propertiesTable').DataTable();
 
