@@ -119,118 +119,11 @@ if(isset($_POST['delete_property'])) {
     <!-- DataTables JS -->
     <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
     <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="./css/admin.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <style>
-        /* Main Layout */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
 
-        h2 {
-            color: #2c3e50;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        /* Form Styling */
-        #addPropertyForm {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
-        }
-
-        #addPropertyForm input,
-        #addPropertyForm select,
-        #addPropertyForm textarea {
-            width: 100%;
-            padding: 10px;
-            margin: 8px 0;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-
-        #addPropertyForm button {
-            background-color: #3498db;
-            color: white;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            width: 100%;
-            font-size: 16px;
-        }
-
-        #addPropertyForm button:hover {
-            background-color: #2980b9;
-        }
-
-        /* Table Styling */
-        .property-list {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        #propertyTable {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        #propertyTable th {
-            background-color: #3498db;
-            color: white;
-            padding: 12px;
-        }
-
-        #propertyTable td {
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        /* Button Styling */
-        .property-list button {
-            padding: 8px 15px;
-            margin: 0 5px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .property-list button:nth-child(1) {
-            background-color: #2ecc71;
-            color: white;
-        }
-
-        .property-list button:nth-child(2) {
-            background-color: #e74c3c;
-            color: white;
-        }
-
-        .property-list button:hover {
-            opacity: 0.9;
-        }
-
-        /* SweetAlert Customization */
-        .swal2-popup {
-            font-size: 14px;
-        }
-
-        .swal2-input, .swal2-textarea {
-            margin: 10px auto !important;
-            width: 90% !important;
-        }
-</style>
 </head>
 <body>
     <h2>Admin Dashboard</h2>
@@ -270,7 +163,7 @@ if(isset($_POST['delete_property'])) {
             </thead>
             <tbody>
                 <?php
-                $properties = mysqli_query($conn, "SELECT * FROM properties");
+                $properties = mysqli_query($conn, "SELECT * FROM properties WHERE id NOT IN (SELECT property_id FROM buyers WHERE status = 'approved')");
                 while($property = mysqli_fetch_array($properties)) {
                     echo "<tr>";
                     echo "<td>{$property['property_type']}</td>";

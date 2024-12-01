@@ -138,7 +138,7 @@ class ConfirmPassword extends BaseMethod {
         $result = $this->conn->query($checkEmailQuery);
 
         if ($result->num_rows > 0) {
-            $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+            $hashedPassword = password_hash($confirmPassword, PASSWORD_DEFAULT);
             $updatePasswordQuery = "UPDATE users SET password = '" . $hashedPassword . "' WHERE email = '" . $email . "'";
             if ($this->conn->query($updatePasswordQuery)) {
                 $this->showAlert('Success', 'Password updated successfully!', 'success');
@@ -169,8 +169,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['Confirm'])) {
         $data = [
             'email' => $_POST['email'],
-            'newPassword' => $_POST['newPassword'],
-            'confirmPassword' => $_POST['confirmPassword']
+            'newPassword' => $_POST['password'],
+            'confirmPassword' => $_POST['newPassword']
         ];
         $confirmPassword = new ConfirmPassword($conn);
         $confirmPassword->execute($data);
