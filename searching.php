@@ -1,5 +1,5 @@
 <?php  
-// DatabaseHandler Class for managing database connection and queries
+
 class DatabaseHandler {
     private $host = "localhost";
     private $username = "root";
@@ -7,21 +7,18 @@ class DatabaseHandler {
     private $database = "php_project";
     private $conn;
 
-    // Constructor to initialize database connection
     public function __construct() {
         $this->conn = new mysqli($this->host, $this->username, $this->password, $this->database);
 
-        // Check connection
+
         if ($this->conn->connect_error) {
             die("Connection failed: " . $this->conn->connect_error);
         }
     }
 
-    // Method to fetch properties based on search and filters
     public function getProperties($search = "", $filter = "") {
         $query = "SELECT id, property_type, price_range, location, area, capacity, description, photos FROM properties";
 
-        // Adding search and filter conditions dynamically
         $conditions = [];
         if (!empty($search)) {
             $conditions[] = "(property_type LIKE '%$search%' OR location LIKE '%$search%' OR description LIKE '%$search%')";
@@ -37,16 +34,13 @@ class DatabaseHandler {
         return $result;
     }
 
-    // Destructor to close the database connection
     public function __destruct() {
         $this->conn->close();
     }
 }
 
-// Instantiate the DatabaseHandler class
 $dbHandler = new DatabaseHandler();
 
-// Fetch properties based on search and filter input
 $search = isset($_GET['search']) ? $_GET['search'] : "";
 $filter = isset($_GET['filter']) ? $_GET['filter'] : "";
 $properties = $dbHandler->getProperties($search, $filter);
@@ -68,7 +62,7 @@ $properties = $dbHandler->getProperties($search, $filter);
                 <li><a href="homepage.php">HOME</a></li>
                 <li><a href="#">MY PROFILE</a></li>
                 <li><a href="searching.php">HOUSING OFFERS</a></li>
-                <li><a href="#">ABOUT</a></li>
+                <li><a href="#about">ABOUT</a></li>
             </ul>
         </div>
         <button class="btn">LOGOUT</button>
@@ -95,7 +89,7 @@ $properties = $dbHandler->getProperties($search, $filter);
     <?php
     if ($properties->num_rows > 0) {
         while ($row = $properties->fetch_assoc()) {
-            // Properly handle the photo path
+           
             $photoPath = !empty($row['photos']) ? 'php_pics/' . htmlspecialchars($row['photos']) : '/placeholder.svg';
             
             echo '<div class="property-card">';
