@@ -210,3 +210,4 @@ $result = $conn->query("SELECT * FROM properties WHERE id NOT IN (SELECT propert
 </script>
 </body>
 </html>
+
