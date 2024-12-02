@@ -15,7 +15,7 @@
 }
 
 .logo {
-    color: #4F46E5;
+    color: #2980b9;
     font-size: 1.5rem;
     font-weight: bold;
 }
@@ -32,7 +32,7 @@
 }
 
 .btn {
-    background-color: #4F46E5;
+    background-color: #2980b9;
     color: white;
     padding: 0.5rem 1rem;
     border: none;
@@ -115,7 +115,7 @@
 
 .buy-now {
     width: 100%;
-    background-color: #10B981;
+    background-color: #2980b9;
     color: white;
     padding: 0.75rem;
     border: none;
@@ -125,5 +125,5 @@
 }
 
 .buy-now:hover {
-    background-color: #059669;
+    background-color: #0c5c7e;
 }
