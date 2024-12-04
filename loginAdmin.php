@@ -1,5 +1,4 @@
 <?php
-
 include 'connect.php';
 
 class Users {
@@ -7,7 +6,7 @@ class Users {
     private $username;
     private $password;
 
-    public function __construct($email, $username = null, $password) {
+    public function __construct($email, $username, $password) {
         $this->email = $email;
         $this->username = $username;
         $this->password = $password;
@@ -62,14 +61,14 @@ abstract class BaseMethod {
 
 class SignUp extends BaseMethod {
     public function execute($user) {
-        $checkEmailQuery = "SELECT * FROM users WHERE email = '" . $user->getEmail() . "'";
+        $checkEmailQuery = "SELECT * FROM admin_users WHERE email = '" . $user->getEmail() . "'";
         $result = $this->conn->query($checkEmailQuery);
 
         if ($result->num_rows > 0) {
             $this->showAlert('Error!', 'Email already exists!', 'error');
         } else {
             $hashedPassword = password_hash($user->getPassword(), PASSWORD_DEFAULT);
-            $insertQuery = "INSERT INTO users (email, username, password) 
+            $insertQuery = "INSERT INTO admin_users (email, username, password) 
                             VALUES ('" . $user->getEmail() . "', '" . $user->getUsername() . "', '" . $hashedPassword . "')";
             if ($this->conn->query($insertQuery)) {
                 $this->showAlert('Success', 'Account created successfully!', 'success');
@@ -82,7 +81,7 @@ class SignUp extends BaseMethod {
 
 class Login extends BaseMethod {
     public function execute($user) {
-        $query = "SELECT id, username, password FROM users WHERE email = '" . $user->getEmail() . "'";
+        $query = "SELECT id, username, password FROM admin_users WHERE email = '" . $user->getEmail() . "'";
         $result = $this->conn->query($query);
 
         if ($result->num_rows > 0) {
@@ -108,7 +107,7 @@ class Login extends BaseMethod {
                         text: 'Welcome back!',
                         icon: 'success'
                     }).then(() => {
-                        window.location.href = 'home.php';
+                        window.location.href = 'adminhome.php';
                     });
                 </script>
                 </body>
@@ -134,12 +133,12 @@ class ConfirmPassword extends BaseMethod {
             return;
         }
 
-        $checkEmailQuery = "SELECT * FROM users WHERE email = '" . $email . "'";
+        $checkEmailQuery = "SELECT * FROM admin_users WHERE email = '" . $email . "'";
         $result = $this->conn->query($checkEmailQuery);
 
         if ($result->num_rows > 0) {
             $hashedPassword = password_hash($confirmPassword, PASSWORD_DEFAULT);
-            $updatePasswordQuery = "UPDATE users SET password = '" . $hashedPassword . "' WHERE email = '" . $email . "'";
+            $updatePasswordQuery = "UPDATE admin_users SET password = '" . $hashedPassword . "' WHERE email = '" . $email . "'";
             if ($this->conn->query($updatePasswordQuery)) {
                 echo "
                 <!DOCTYPE html>
@@ -157,7 +156,7 @@ class ConfirmPassword extends BaseMethod {
                         text: 'Password updated successfully!',
                         icon: 'success'
                     }).then(() => {
-                        window.location.href = 'index.php';
+                        window.location.href = 'indexAdmin.php';
                     });
                 </script>
                 </body>

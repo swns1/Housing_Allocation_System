@@ -314,6 +314,21 @@ if (isset($_POST['approve'])) {
     $stmt->close();
 }
 
+if (isset($_POST['decline'])) {
+    $buyer_id = $_POST['buyer_id'];
+
+    $stmt = $conn->prepare("DELETE FROM buyers WHERE id = ?");
+    $stmt->bind_param("i", $buyer_id);
+
+    if ($stmt->execute()) {
+        $_SESSION['notification'] = "The purchase request has been declined.";
+    } else {
+        $_SESSION['notification'] = "There was an error declining the request.";
+    }
+
+    $stmt->close();
+}
+
 $result = $conn->query("SELECT buyers.*, properties.property_type, properties.location FROM buyers JOIN properties ON buyers.property_id = properties.id WHERE buyers.status = 'pending'");
 ?>
 
@@ -352,6 +367,7 @@ $result = $conn->query("SELECT buyers.*, properties.property_type, properties.lo
                             <form method="POST">
                                 <input type="hidden" name="buyer_id" value="<?= $row['id'] ?>">
                                 <button type="submit" name="approve" class="btn btn-success">Approve</button>
+                                <button type="submit" name="decline" class="btn btn-danger">Decline</button>
                             </form>
                         </td>
                     </tr>
