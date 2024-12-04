@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="homepage-style.css">
+    <link rel="stylesheet" href="./css/homepage-style.css">
     <title>Neighborly: Housing Allocation System</title>
 </head>
 <body>
@@ -13,15 +13,14 @@
         <div class="menu">
             <ul>
                 <li><a href="homepage.php">HOME</a></li>
-                <li><a href="#">MY PROFILE</a></li>
+                <li><a href="profile.php">MY PROFILE</a></li>
                 <li><a href="searching.php">HOUSING OFFERS</a></li>
                 <li><a href="#about">ABOUT</a></li>
             </ul>
         </div>
-        <a href="register.php" class="btn">LOGOUT</a>
+        <a href="logout.php" class="btn">LOGOUT</a>
     </nav>
 
-    <!-- Slideshow Section -->
     <section class="slideshow">
         <div class="slide active">
             <div class="slide-image-container">
@@ -62,7 +61,6 @@
         </div>
     </section>
 
-    <!-- About Section -->
     <section id = "about" class="about">
         <div class="about-content">
             <div class="about-card">
@@ -80,7 +78,6 @@
         </div>
     </section>
 
-    <!-- Contact Section -->
     <section class="contact">
         <div class="contact-content">
             <h2>Get in Touch</h2>
@@ -102,7 +99,6 @@
         </div>
     </section>
 
-    <!-- Footer -->
     <footer class="footer">
         <div class="footer-bottom">
             <p>&copy; 2024 Neighborly. All rights reserved.</p>
