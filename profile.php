@@ -18,10 +18,10 @@ $purchasedProperties = [];
 if ($userInfo) {
     $userId = $conn->query("SELECT id FROM `users` WHERE email = '$email'")->fetch_assoc()['id'];
     $propertyQuery = $conn->query("
-        SELECT p.property_type, p.price_range, p.location, p.area, p.capacity, p.description 
-        FROM properties p
-        JOIN buyers b ON p.id = b.property_id
-        WHERE b.user_id = '$userId'");
+    SELECT p.property_type, p.price_range, p.location, p.area, p.capacity, p.description, b.status
+    FROM properties p
+    JOIN buyers b ON p.id = b.property_id
+    WHERE b.user_id = '$userId'");
     while ($propertyQuery && $row = $propertyQuery->fetch_assoc()) {
         $purchasedProperties[] = array_map('htmlspecialchars', $row);
     }
@@ -75,22 +75,32 @@ if ($userInfo) {
                 </div>
             </div>
             <div class="property-section">
-                <h2>Purchased Properties</h2>
-                <?php if (!empty($purchasedProperties)): ?>
-                    <?php foreach ($purchasedProperties as $property): ?>
-                        <div class="property">
-                            <p><strong>Type:</strong> <?= $property['property_type'] ?></p>
-                            <p><strong>Price Range:</strong> <?= $property['price_range'] ?></p>
-                            <p><strong>Location:</strong> <?= $property['location'] ?></p>
-                            <p><strong>Area:</strong> <?= $property['area'] ?> sq ft</p>
-                            <p><strong>Capacity:</strong> <?= $property['capacity'] ?></p>
-                            <p><strong>Description:</strong> <?= $property['description'] ?></p>
-                        </div>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <p>No purchased properties found.</p>
-                <?php endif; ?>
+    <h2>Purchased Properties</h2>
+    <?php if (!empty($purchasedProperties)): ?>
+        <?php foreach ($purchasedProperties as $property): ?>
+            <div class="property">
+                <p><strong>Type:</strong> <?= $property['property_type'] ?></p>
+                <p><strong>Price Range:</strong> <?= $property['price_range'] ?></p>
+                <p><strong>Location:</strong> <?= $property['location'] ?></p>
+                <p><strong>Area:</strong> <?= $property['area'] ?> sq ft</p>
+                <p><strong>Capacity:</strong> <?= $property['capacity'] ?></p>
+                <p><strong>Description:</strong> <?= $property['description'] ?></p>
+                <p><strong>Status:</strong> 
+                    <?php if ($property['status'] == 'pending'): ?>
+                        <span style="color: orange;">Pending</span>
+                    <?php elseif ($property['status'] == 'approved'): ?>
+                        <span style="color: green;">Approved</span>
+                    <?php elseif ($property['status'] == 'rejected'): ?>
+                        <span style="color: red;">Rejected</span>
+                    <?php endif; ?>
+                </p>
             </div>
+        <?php endforeach; ?>
+    <?php else: ?>
+        <p>No purchased properties found.</p>
+    <?php endif; ?>
+</div>
+
         </div>
     </section>
 
