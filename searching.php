@@ -86,30 +86,33 @@ $properties = $dbHandler->getProperties($search, $filter);
     </div>
 
     <div class="custom-properties-grid">
-        <?php
-        if ($properties->num_rows > 0) {
-            while ($row = $properties->fetch_assoc()) {
-                $photoPath = !empty($row['photos']) ? 'img/' . htmlspecialchars($row['photos']) : '/placeholder.svg';
-                
-                echo '<div class="custom-property-card">';
-                echo '<img src="' . $photoPath . '" alt="Property" class="custom-property-image">';
-                echo '<div class="custom-property-details">';
-                echo '<div class="custom-property-type">' . htmlspecialchars($row['property_type']) . '</div>';
-                echo '<div class="custom-property-location">' . htmlspecialchars($row['location']) . '</div>';
-                echo '<div class="custom-property-specs">';
-                echo '<span>Area: ' . htmlspecialchars($row['area']) . ' sqm</span>';
-                echo '<span>Capacity: ' . htmlspecialchars($row['capacity']) . '</span>';
-                echo '</div>';
-                echo '<div class="custom-property-price">₱' . htmlspecialchars($row['price_range']) . '</div>';
-                echo '<button class="custom-buy-now buy-btn" data-id="' . $row['id'] . '" data-toggle="modal" data-target="#buyModal">Buy Now</button>';
-                echo '</div>';
-                echo '</div>';
-            }
-        } else {
-            echo '<p style="text-align: center; grid-column: 1 / -1;">No properties found</p>';
-        }
-        ?>
-    </div>
+<?php
+if ($properties->num_rows > 0) {
+    while ($row = $properties->fetch_assoc()) {
+        $photoPath = !empty($row['photos']) 
+            ? 'img/' . htmlspecialchars($row['photos']) 
+            : 'img/house' . htmlspecialchars($row['id'] % 10 + 1) . '.jpg';
+
+        echo '<div class="custom-property-card">';
+        echo '<div class="custom-property-image-container">';
+        echo '<img src="' . $photoPath . '" alt="Property" class="custom-property-image" onerror="this.src=\'img/house.jpg\'">';
+        echo '</div>';
+        echo '<div class="custom-property-details">';
+        echo '<div class="custom-property-type">' . htmlspecialchars($row['property_type']) . '</div>';
+        echo '<div class="custom-property-location">' . htmlspecialchars($row['location']) . '</div>';
+        echo '<div class="custom-property-specs">';
+        echo '<span>Area: ' . htmlspecialchars($row['area']) . ' sqm</span>';
+        echo '<span>Capacity: ' . htmlspecialchars($row['capacity']) . '</span>';
+        echo '</div>';
+        echo '<div class="custom-property-price">₱' . htmlspecialchars($row['price_range']) . '</div>';
+        echo '<button class="custom-buy-now buy-btn" data-id="' . $row['id'] . '" data-toggle="modal" data-target="#buyModal">Buy Now</button>';
+        echo '</div>';
+        echo '</div>';
+    }
+} else {
+    echo '<p class="text-center">No properties found</p>';
+}
+?>
 
     <!-- Modal Section -->
     <div class="modal fade" id="buyModal" tabindex="-1" aria-hidden="true">
