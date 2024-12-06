@@ -15,6 +15,14 @@ CREATE TABLE users (
     password VARCHAR(255) NOT NULL
 );
 
+CREATE TABLE notifications (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_email VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    date_created DATETIME NOT NULL,
+    is_read BOOLEAN DEFAULT FALSE
+);
+
 CREATE TABLE buyers (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT,
