@@ -23,6 +23,15 @@ CREATE TABLE notifications (
     is_read BOOLEAN DEFAULT FALSE
 );
 
+CREATE TABLE properties (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    property_type VARCHAR(100) NOT NULL,
+    price_range VARCHAR(100) NOT NULL,
+    location VARCHAR(255) NOT NULL,
+    area INT NOT NULL,
+    capacity VARCHAR(50) NOT NULL,
+    description TEXT NOT NULL
+);
 
 CREATE TABLE buyers (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -31,8 +40,10 @@ CREATE TABLE buyers (
     email VARCHAR(100) NOT NULL,
     phone VARCHAR(20) NOT NULL,
     message TEXT,
+    user_id INT NOT NULL
     status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
-    FOREIGN KEY (property_id) REFERENCES properties(id)
+    FOREIGN KEY (property_id) REFERENCES properties(id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
 INSERT INTO properties (title, property_type, description, price, price_range, location, area, capacity, status) VALUES

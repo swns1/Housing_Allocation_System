@@ -108,7 +108,7 @@ class Login extends BaseMethod {
                         text: 'Welcome back!',
                         icon: 'success'
                     }).then(() => {
-                        window.location.href = 'home.php';
+                        window.location.href = 'homepage.php';
                     });
                 </script>
                 </body>

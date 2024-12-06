@@ -26,7 +26,7 @@ abstract class Base {
                 text: '{$message}',
                 icon: '{$type}'
             }).then(() => {
-            window.location.href = 'home.php';
+            window.location.href = 'homepage.php';
             });
         </script>
         </body>
