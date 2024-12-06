@@ -62,6 +62,7 @@ $properties = $dbHandler->getProperties($search, $filter);
                 <li><a href="homepage.php">HOME</a></li>
                 <li><a href="profile.php">MY PROFILE</a></li>
                 <li><a href="searching.php">HOUSING OFFERS</a></li>
+                <li><a href="notifications.php">NOTIFICATIONS</a></li>
                 <li><a href="#about">ABOUT</a></li>
             </ul>
         </div>

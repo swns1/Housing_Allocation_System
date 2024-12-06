@@ -23,16 +23,6 @@ class Properties {
         $this->conn = $conn;
     }
 
-    public function setProperties($data) {
-        $this->id = $data['id'] ?? null;
-        $this->propertyType = $data['property_type'] ?? $data['propertyType'];
-        $this->priceRange = $data['price_range'] ?? $data['priceRange'];
-        $this->location = $data['location'];
-        $this->area = $data['area'];
-        $this->capacity = $data['capacity'];
-        $this->description = $data['description'];
-    }
-
     public function addProperty() {
         $query = "INSERT INTO properties (property_type, price_range, location, area, capacity, description) 
                 VALUES ('$this->propertyType', '$this->priceRange', '$this->location', '$this->area', '$this->capacity', '$this->description')";
@@ -57,10 +47,6 @@ class Properties {
 
     public function getPropertyById($id) {
         return mysqli_query($this->conn, "SELECT * FROM properties WHERE id = $id");
-    }
-
-    public function getAllProperties() {
-        return mysqli_query($this->conn, "SELECT * FROM properties");
     }
 }
 
@@ -104,8 +90,41 @@ if(isset($_POST['delete_property'])) {
     header("Location: adminhome.php");
     exit();
 }
-?>
 
+if (isset($_POST['approve'])) {
+    $buyer_id = $_POST['buyer_id'];
+    $query = "SELECT b.email, p.property_type, p.location FROM buyers b 
+              JOIN properties p ON b.property_id = p.id 
+              WHERE b.id = '$buyer_id'";
+    $buyerData = $conn->query($query)->fetch_assoc();
+
+    $stmt = $conn->prepare("UPDATE buyers SET status = 'approved' WHERE id = ?");
+    $stmt->bind_param("i", $buyer_id);
+    
+    if ($stmt->execute()) {
+        $_SESSION['notification'] = "Request approved successfully";
+    }
+    $stmt->close();
+}
+
+if (isset($_POST['reject'])) {
+    $buyer_id = $_POST['buyer_id'];
+    $query = "SELECT b.email, p.property_type, p.location FROM buyers b 
+              JOIN properties p ON b.property_id = p.id 
+              WHERE b.id = '$buyer_id'";
+    $buyerData = $conn->query($query)->fetch_assoc();
+
+    $stmt = $conn->prepare("UPDATE buyers SET status = 'rejected' WHERE id = ?");
+    $stmt->bind_param("i", $buyer_id);
+    
+    if ($stmt->execute()) {
+        $_SESSION['notification'] = "Request rejected successfully";
+    }
+    $stmt->close();
+}
+
+$result = $conn->query("SELECT buyers.*, properties.property_type, properties.location FROM buyers JOIN properties ON buyers.property_id = properties.id WHERE buyers.status = 'pending'");
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -297,38 +316,49 @@ if(isset($_POST['delete_property'])) {
 </body>
 </html>
 
-
 <?php
+function saveNotification($user_email, $status, $propertyDetails) {
+    global $conn;
+    $message = "Your purchase request for {$propertyDetails['property_type']} at {$propertyDetails['location']} has been " . strtoupper($status);
+    $date = date('Y-m-d H:i:s');
+    
+    $stmt = $conn->prepare("INSERT INTO notifications (user_email, message, date_created) VALUES (?, ?, ?)");
+    $stmt->bind_param("sss", $user_email, $message, $date);
+    return $stmt->execute();
+}
+
 if (isset($_POST['approve'])) {
     $buyer_id = $_POST['buyer_id'];
+    $query = "SELECT b.email, p.property_type, p.location FROM buyers b 
+              JOIN properties p ON b.property_id = p.id 
+              WHERE b.id = '$buyer_id'";
+    $buyerData = $conn->query($query)->fetch_assoc();
 
     $stmt = $conn->prepare("UPDATE buyers SET status = 'approved' WHERE id = ?");
     $stmt->bind_param("i", $buyer_id);
     
     if ($stmt->execute()) {
-        $_SESSION['notification'] = "The purchase request has been approved.";
-    } else {
-        $_SESSION['notification'] = "There was an error approving the request.";
+        saveNotification($buyerData['email'], 'approved', $buyerData);
+        $_SESSION['notification'] = "Request approved and notification saved";
     }
-
     $stmt->close();
 }
-
 if (isset($_POST['reject'])) {
     $buyer_id = $_POST['buyer_id'];
+    $query = "SELECT b.email, p.property_type, p.location FROM buyers b 
+              JOIN properties p ON b.property_id = p.id 
+              WHERE b.id = '$buyer_id'";
+    $buyerData = $conn->query($query)->fetch_assoc();
 
     $stmt = $conn->prepare("UPDATE buyers SET status = 'rejected' WHERE id = ?");
     $stmt->bind_param("i", $buyer_id);
-
+    
     if ($stmt->execute()) {
-        $_SESSION['notification'] = "The purchase request has been rejected.";
-    } else {
-        $_SESSION['notification'] = "There was an error rejecting the request.";
+        saveNotification($buyerData['email'], 'rejected', $buyerData);
+        $_SESSION['notification'] = "Request rejected successfully";
     }
-
     $stmt->close();
 }
-
 
 $result = $conn->query("SELECT buyers.*, properties.property_type, properties.location FROM buyers JOIN properties ON buyers.property_id = properties.id WHERE buyers.status = 'pending'");
 ?>
