@@ -23,13 +23,6 @@ CREATE TABLE notifications (
     is_read BOOLEAN DEFAULT FALSE
 );
 
-CREATE TABLE buyers (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT,
-    property_id INT,
-    status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
 
 CREATE TABLE buyers (
     id INT PRIMARY KEY AUTO_INCREMENT,
