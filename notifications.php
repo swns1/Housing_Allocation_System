@@ -64,34 +64,32 @@ $notifications = $conn->query("SELECT * FROM notifications WHERE user_email = '$
                 order: [[1, 'desc']]
             });
         });
-
         function deleteNotification(id) {
-            Swal.fire({
-                title: 'Delete Notification?',
-                text: "This action cannot be undone",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Delete'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    fetch('delete_notification.php', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                        },
-                        body: 'id=' + id
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            location.reload();
-                        }
-                    });
-                }
-            });
+    Swal.fire({
+        title: 'Delete Notification?',
+        text: "This action cannot be undone",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Delete'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = 'deleteNotification.php';
+            
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'id';
+            input.value = id;
+            
+            form.appendChild(input);
+            document.body.appendChild(form);
+            form.submit();
         }
-    </script>
+    });
+}
+   </script>
 </body>
 </html>
